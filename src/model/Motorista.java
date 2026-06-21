@@ -4,19 +4,13 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**********************************
- * IFPB - Curso Superior de Tec. em Sist. para Internet
- * POB - Persistencia de Objetos
- * Prof. Fausto Ayres
- *
- */
-
 @Entity
 @Table(name="motorista20251234567")
 public class Motorista {
     @Id
     private String cnh;
     private String nome;
+	private byte[] foto;
 
     @OneToMany(mappedBy="motorista", cascade=CascadeType.ALL, orphanRemoval=true)
     private List<Viagem> listaViagem = new ArrayList<>();
@@ -28,7 +22,14 @@ public class Motorista {
         this.cnh = cnh;
         this.nome = nome;
     }
+    
+	public byte[] getFoto() {
+		return foto;
+	}
 
+	public void setFoto(byte[] foto) {
+		this.foto = foto;
+	}
     
     public String getCnh() { return cnh; }
     public void setCnh(String cnh) { this.cnh = cnh; }
