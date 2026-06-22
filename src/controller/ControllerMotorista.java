@@ -29,7 +29,7 @@ public class ControllerMotorista {
     // ==========================================
     // CRIAR MOTORISTA
     // ==========================================
-    public static void criarMotorista(String cnh, String nome, String categoriaCnh) throws Exception {
+    public static void criarMotorista(String cnh, String nome) throws Exception {
         try {
             Repositorio.conectar();
             Repositorio.begin();
@@ -42,9 +42,11 @@ public class ControllerMotorista {
 
             // 2. Validação de Regra de Negócio: Evitar CNH duplicada
             Motorista m = repMotorista.localizar(cnh);
-            if (m != null) 
+            if (m != null) {
+            	System.out.println("CNH duplicada");
                 throw new Exception("Criar motorista - Já existe um motorista cadastrado com esta CNH: " + cnh);
-            
+                
+            }
             // 3. Instanciação e persistência do objeto
             m = new Motorista();
             m.setCnh(cnh);
@@ -128,12 +130,20 @@ public class ControllerMotorista {
         return lista;
     }
 
-    // Busca dinâmica (Útil para pesquisar por partes do nome na barra de busca da tela Swing)
-    public static List<Motorista> buscarMotoristasPorNome(String nome) {
+ // Buscar um único motorista pelo nome
+    public static Motorista buscarMotoristaPorNome(String nome) {
         Repositorio.conectar();
         List<Motorista> lista = repMotorista.listarPorNome(nome);
         Repositorio.desconectar();
-        return lista;
+
+        // Varre a lista procurando o motorista
+        for (Motorista m : lista) {
+            // equalsIgnoreCase garante que "caue" ou "Caue" funcionem igual
+            if (m.getNome().equalsIgnoreCase(nome)) {
+                return m; // Encontrou! Retorna o objeto e para o método
+            }
+        }
+        return null; // Se percorreu a lista toda e não achou, retorna null
     }
     
     

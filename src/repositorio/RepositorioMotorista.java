@@ -1,8 +1,3 @@
-/**********************************
- * IFPB - Curso Superior de Tec. em Sist. para Internet
- * POO
- * Prof. Fausto Maranh�o Ayres
- **********************************/
 package repositorio;
 
 import java.util.List;
@@ -14,12 +9,11 @@ import util.Util;
 public class RepositorioMotorista extends Repositorio<Motorista> {
 	
 	public Motorista localizar(Object chave) {
-		String nome = (String) chave;
-		TypedQuery<Motorista> q = Util.getManager().createQuery("""
-				select * from Motorista""", Motorista.class);
-		q.setParameter("n", nome);
-
-		return q.getSingleResultOrNull();
+	    String nome = (String) chave;	    
+	    TypedQuery<Motorista> q = Util.getManager().createQuery("""
+	            select m from Motorista m where m.nome = :n""", Motorista.class);	    
+	    q.setParameter("n", nome);
+	    return q.getSingleResultOrNull();
 	}
 	
 	public List<Motorista> listar() {

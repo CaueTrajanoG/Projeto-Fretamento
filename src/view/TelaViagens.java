@@ -12,9 +12,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -31,6 +34,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
+import controller.ControllerMotorista;
 import controller.ControllerViagem;
 import model.Viagem;
 import javax.swing.JTextField;
@@ -55,6 +59,8 @@ public class TelaViagens {
 	private JButton button_6;
 	private JPanel panel;
 	private BufferedImage buffer; // armazena a foto na mem�ria durante a edicao
+	private int idSelecionada = 0;
+	private JTextField textField_3;
 
 	public TelaViagens() {
 		initialize();
@@ -142,10 +148,12 @@ public class TelaViagens {
 					if (table.getSelectedRow() >= 0) {
 						// copiar a pessoa selecionada para formulario de edicao
 						int id = (int) table.getValueAt(table.getSelectedRow(), 0);
+						idSelecionada = id;
 						Viagem v = ControllerViagem.localizarViagem(id);
 						textField.setText(v.getDestino());
 						textField_1.setText(v.getMotorista().getNome());
 						textField_2.setText(v.getVeiculo().getPlaca());
+						textField_3.setText(v.getMotorista().getCnh());
 
 						// carregar foto
 						if (v.getMotorista().getFoto() != null) {
@@ -209,13 +217,14 @@ public class TelaViagens {
 		frame.getContentPane().add(button_1);
 
 		button_2 = new JButton("Atualizar");
-		button_2.setToolTipText("atualizar pessoa ");
+		button_2.setToolTipText("atualizar viagem ");
 		button_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// if (textField_1.getText().isEmpty())
-				// label.setText("nome vazio");
-				// else
-				// atualizarPessoaSelecionada();
+				if (textField_1.getText().isEmpty())
+					label.setText("nome vazio");
+				else
+					atualizarViagemSelecionada();
+				label.setText("Registro de viagem atualizado.");
 			}
 		});
 		button_2.setBounds(126, 411, 95, 23);
@@ -237,6 +246,7 @@ public class TelaViagens {
 		button_4 = new JButton("Limpar");
 		button_4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				textField.setText("");
 				textField_1.setText("");
 				textField_2.setText("");
 
@@ -285,6 +295,13 @@ public class TelaViagens {
 		button_6.setBounds(639, 408, 108, 23);
 		frame.getContentPane().add(button_6);
 
+		textField_3 = new JTextField();
+		textField_3.setToolTipText("CNH");
+		textField_3.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		textField_3.setColumns(10);
+		textField_3.setBounds(301, 300, 179, 25);
+		frame.getContentPane().add(textField_3);
+
 	}
 
 	// função que busca os dados
@@ -331,5 +348,35 @@ public class TelaViagens {
 		chooser.showOpenDialog(null);
 		File file = chooser.getSelectedFile();
 		return file;
+	}
+
+	public void atualizarViagemSelecionada() {
+		try {
+			label.setText("");
+			String destino = textField.getText();
+			String motorista = textField_1.getText();
+			String placa = textField_2.getText();
+			String cnh = textField_3.getText();
+
+			ControllerViagem.alterarViagem(idSelecionada, destino, motorista, placa, cnh);
+
+//			// parte da foto
+//			byte[] bytesfoto = null;
+//			if (buffer != null)
+//				try {
+//					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//					ImageIO.write(buffer, "jpg", baos);
+//					bytesfoto = baos.toByteArray();
+//					baos.close();
+//				} catch (IOException ex1) {
+//					label.setText("problema na convers�o da imagem em bytes");
+//				}
+			// FachadaPessoa.alterarFoto(nome, bytesfoto);
+
+			label.setText("Registro de viagem atualizado");
+			listagem();
+		} catch (Exception ex2) {
+			label.setText(ex2.getMessage());
+		}
 	}
 }

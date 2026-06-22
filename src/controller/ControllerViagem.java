@@ -197,4 +197,54 @@ public class ControllerViagem {
 			throw new Exception("Consulta por data - formato inválido: " + dataStr);
 		}
 	}
+
+	public static void alterarViagem(int idSelecionada, String destino, String motorista, String placa, String cnh) throws Exception {
+		try {
+			Repositorio.conectar();
+			Repositorio.begin();
+			Viagem v = repViagem.localizar(idSelecionada);
+			
+			if (v == null)
+				throw new Exception("alterar viagem - registro de viagem inexistente: " + destino);			
+			v.setDestino(destino);
+	        
+	        model.Motorista m = repMotorista.localizar(motorista); // Busque direto pelo repositório se tiver o método
+	        
+	        if (m != null) {
+	            v.setMotorista(m); 
+	            System.out.println("Alterando motorista existente");
+	        } else {
+	            // Se for criar, certifique-se de que o criar do repositório não dê outro "begin" ou use a mesma conexão
+	            m = new model.Motorista();
+	            m.setCnh(cnh);
+	            m.setNome(motorista);
+	            repMotorista.criar(m); // persiste no mesmo gerenciador
+	            v.setMotorista(m);
+	            System.out.println("Criando novo motorista");
+	        }
+	        // ==========================================
+	        // REGRA DO VEÍCULO
+	        // ==========================================
+	        model.Veiculo vec = repVeiculo.localizar(placa);
+	        if (vec != null) {
+	            v.setVeiculo(vec);              
+	        } else {
+	            // Caso não exista o veículo, cria um com capacidade padrão (ex: 40) ou lança erro
+	            vec = new model.Veiculo();
+	            vec.setPlaca(placa);
+	            vec.setCapacidade(40); // ajuste conforme a regra do seu sistema
+	            repVeiculo.criar(vec);
+	            v.setVeiculo(vec);
+	        }
+			repViagem.atualizar(v); 
+			Repositorio.commit();
+
+		} catch (Exception e) {
+			Repositorio.rollback();
+			throw e;
+		} finally {
+			Repositorio.desconectar();
+		}
+		
+	}
 }

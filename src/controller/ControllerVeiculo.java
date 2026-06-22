@@ -2,6 +2,7 @@ package controller;
 
 import java.util.List;
 
+import model.Motorista;
 import model.Veiculo;
 import repositorio.Repositorio;
 import repositorio.RepositorioVeiculo;
@@ -127,5 +128,21 @@ public class ControllerVeiculo {
         List<Veiculo> lista = repVeiculo.listar();
         Repositorio.desconectar();
         return lista;
+    }
+    
+    // Buscar um único veiculo pela placa
+    public static Veiculo buscarVeiculoPorPlaca(String placa) {
+        Repositorio.conectar();
+        List<Veiculo> lista = repVeiculo.listar();
+        Repositorio.desconectar();
+
+        // Varre a lista procurando o motorista
+        for (Veiculo v : lista) {
+            
+            if (v.getPlaca().equalsIgnoreCase(placa)) {
+                return v; // Encontrou! Retorna o objeto e para o método
+            }
+        }
+        return null; // Se percorreu a lista toda e não achou, retorna null
     }
 }
