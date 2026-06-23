@@ -68,13 +68,6 @@ public class TelaViagens {
 		initialize();
 		frame.setVisible(true);
 	}
-	/*
-	 * public static void main(String[] args) { EventQueue.invokeLater(new
-	 * Runnable() { public void run() {
-	 * 
-	 * } }); }
-	 */
-
 	/**
 	 * @wbp.parser.entryPoint
 	 */

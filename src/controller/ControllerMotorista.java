@@ -67,7 +67,7 @@ public class ControllerMotorista {
     // ==========================================
     // ALTERAR MOTORISTA
     // ==========================================
-    public static void alterarMotorista(String cnh, String novoNome, String novaCategoriaCnh) throws Exception {
+    public static void alterarMotorista(String cnh, String novoNome) throws Exception {
         try {
             Repositorio.conectar();
             Repositorio.begin();
