@@ -12,7 +12,7 @@ public class Motorista {
     private String nome;
 	private byte[] foto;
 
-    @OneToMany(mappedBy="motorista", cascade=CascadeType.ALL, orphanRemoval=true)
+    @OneToMany(mappedBy="motorista", cascade=CascadeType.ALL, orphanRemoval=true,fetch = FetchType.EAGER)
     private List<Viagem> listaViagem = new ArrayList<>();
 
     
@@ -51,6 +51,6 @@ public class Motorista {
     @Override
     public String toString() {
         String historico  = itinerario();
-        return "--------------------------------------\n Motorista CNH = " + cnh + ", nome = " + nome + historico;
+        return "Motorista: " + nome + "- CNH: "+cnh ;
     }
 }

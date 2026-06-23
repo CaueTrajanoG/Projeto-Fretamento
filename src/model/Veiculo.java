@@ -18,7 +18,7 @@ public class Veiculo {
     private String placa;
     private int capacidade;
 
-    @OneToMany(mappedBy="veiculo", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy="veiculo", cascade=CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Viagem> listaViagem = new ArrayList<>();
 
     public Veiculo() {}
@@ -48,7 +48,7 @@ public class Veiculo {
     @Override
     public String toString() {
         String historico  = history();
-        return "--------------------------------------\n [placa: " + placa + ", capacidade: " + capacidade + "]" + historico;
+        return "Placa: " + placa + " - capacidade: " + capacidade;
     }
 
 	public void remover(Viagem viagem) {

@@ -3,6 +3,7 @@ package view;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,6 +44,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 public class TelaViagens {
+	protected static final Frame Frame = null;
 	private JLabel label;
 	private JLabel label_1;
 	private JDialog frame;
@@ -66,14 +68,12 @@ public class TelaViagens {
 		initialize();
 		frame.setVisible(true);
 	}
-
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-
-			}
-		});
-	}
+	/*
+	 * public static void main(String[] args) { EventQueue.invokeLater(new
+	 * Runnable() { public void run() {
+	 * 
+	 * } }); }
+	 */
 
 	/**
 	 * @wbp.parser.entryPoint
@@ -210,9 +210,16 @@ public class TelaViagens {
 		textField_2.setBounds(111, 336, 179, 25);
 		frame.getContentPane().add(textField_2);
 
+		// botao para abrir tela de criação de nova viagem
 		button_1 = new JButton("Criar");
 		button_1.setToolTipText("cadastrar nova pessoa");
-
+		button_1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				TelaCadastroViagem tela = new TelaCadastroViagem(Frame);
+				tela.setVisible(true);
+			}
+		});
 		button_1.setBounds(21, 411, 95, 23);
 		frame.getContentPane().add(button_1);
 
@@ -232,14 +239,7 @@ public class TelaViagens {
 
 		button_3 = new JButton("Apagar");
 		button_3.setToolTipText("apagar pessoa e seus dados");
-		button_3.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (textField_1.getText().isEmpty())
-					label.setText("nome vazio");
-				// else
-				// apagarPessoaSelecionada();
-			}
-		});
+
 		button_3.setBounds(231, 411, 95, 23);
 		frame.getContentPane().add(button_3);
 

@@ -42,46 +42,34 @@ public class ControllerViagem {
 		}
 	}
 
-	// ==========================================
-	// CRIAR VIAGEM
-	// ==========================================
-	public static void criarViagem(String dataStr, String destino, String cnhMotorista, String placaVeiculo,
-			List<String> passageiros) throws Exception {
-		try {
-			Repositorio.conectar();
-			Repositorio.begin();
+	public static void criarViagem(LocalDate dataFormatada, String destino, Motorista m, Veiculo vec) throws Exception {
+	    try {
+	        Repositorio.conectar();
+	        Repositorio.begin();
 
-			// 1. Validação do formato da data recebida da Tela/Console
-			LocalDate dataFormatada;
-			try {
-				dataFormatada = LocalDate.parse(dataStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-			} catch (DateTimeParseException e) {
-				throw new Exception("Criar viagem - formato de data inválido (use dd/MM/yyyy): " + dataStr);
-			}
+	        // 1. Validações básicas de segurança (Garantir que os objetos não são nulos)
+	        if (m == null)
+	            throw new Exception("Criar viagem - Objeto Motorista inválido ou nulo.");
 
-			// 2. Validação se o Motorista existe no banco
-			Motorista m = repMotorista.localizar(cnhMotorista);
-			if (m == null)
-				throw new Exception("Criar viagem - Motorista não encontrado com a CNH: " + cnhMotorista);
+	        if (vec == null)
+	            throw new Exception("Criar viagem - Objeto Veículo inválido ou nulo.");
 
-			// 3. Validação se o Veículo existe no banco
-			Veiculo vec = repVeiculo.localizar(placaVeiculo);
-			if (vec == null)
-				throw new Exception("Criar viagem - Veículo não encontrado com a Placa: " + placaVeiculo);
+	        // 2. Instanciação e persistência do objeto Viagem
+	        // (Passando diretamente os objetos que vieram da tela)
+	        Viagem v = new Viagem(dataFormatada, destino, vec, m);
 
-			// 4. Instanciação e persistência do objeto
-			Viagem v = new Viagem(dataFormatada, destino, vec, m);
-			v.setNomePas(passageiros);
+	        // Se você ainda for inicializar a lista de passageiros vazia na criação:
+	        // v.setNomePas(new ArrayList<>()); 
 
-			repViagem.criar(v);
-			Repositorio.commit();
+	        repViagem.criar(v);
+	        Repositorio.commit();
 
-		} catch (Exception e) {
-			Repositorio.rollback();
-			throw e;
-		} finally {
-			Repositorio.desconectar();
-		}
+	    } catch (Exception e) {
+	        Repositorio.rollback();
+	        throw e;
+	    } finally {
+	        Repositorio.desconectar();
+	    }
 	}
 
 	// ==========================================
