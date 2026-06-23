@@ -9,17 +9,19 @@ import util.Util;
 public class RepositorioMotorista extends Repositorio<Motorista> {
 	
 	public Motorista localizar(Object chave) {
-	    String nome = (String) chave;	    
+	    String cnh = (String) chave;	    
 	    TypedQuery<Motorista> q = Util.getManager().createQuery("""
-	            select m from Motorista m where m.nome = :n""", Motorista.class);	    
-	    q.setParameter("n", nome);
+	            select m from Motorista m 
+	            left join fetch m.viagens 
+	            where m.cnh = :c""", Motorista.class);	    
+	    q.setParameter("c", cnh);
 	    return q.getSingleResultOrNull();
 	}
 	
 	public List<Motorista> listar() {
 		TypedQuery<Motorista> q = Util.getManager().createQuery("""
 				select p from Motorista p
-				order by p.id
+				order by p.nome
 				""", Motorista.class);
 		return q.getResultList();
 	}
@@ -36,5 +38,16 @@ public class RepositorioMotorista extends Repositorio<Motorista> {
         
         return query.getResultList();
     }
+	public List<Motorista> consultarMotoristasPorQtdViagensEDestino(int n, String destino) {
+		TypedQuery<Motorista> q = Util.getManager().createQuery(
+				"select m from Motorista m join m.viagens v " +
+				"where v.destino = :dest " +
+				"group by m " +
+				"having count(v) > :qtd", Motorista.class);
+		q.setParameter("dest", destino);
+		q.setParameter("qtd", (long) n); // o count() retorna Long no JPA
+		
+		return q.getResultList();
+	}
 
 }
