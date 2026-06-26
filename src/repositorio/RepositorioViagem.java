@@ -35,6 +35,12 @@ public class RepositorioViagem extends Repositorio<Viagem> {
 		query.setParameter("moto", "%" + nome + "%");
 		return query.getResultList();
 	}
+    public Viagem localizarViagemComMotorista(int idViagem) {
+        return Util.getManager()
+            .createQuery("select v from Viagem v join fetch v.motorista where v.id = :id", Viagem.class)
+            .setParameter("id", idViagem)
+            .getSingleResult();
+    }
 	
 	/**
      * Busca todas as viagens cadastradas em uma data específica.
@@ -53,4 +59,6 @@ public class RepositorioViagem extends Repositorio<Viagem> {
         
         return query.getResultList();
     }
+    
+
 }

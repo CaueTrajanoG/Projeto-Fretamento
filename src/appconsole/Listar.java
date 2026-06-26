@@ -37,7 +37,7 @@ public class Listar {
 			for (Veiculo v : resultados3)
 				System.out.println(v);
 
-
+ 
 			System.out.println("\n Listagem das viagens de cada veiculo");
 			TypedQuery<Viagem> query4 = manager.createQuery("select v from Viagem v", Viagem.class); // order by p.nome
 		}

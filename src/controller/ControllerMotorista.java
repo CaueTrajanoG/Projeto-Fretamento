@@ -5,6 +5,8 @@ import java.util.List;
 import model.Motorista;
 import repositorio.Repositorio;
 import repositorio.RepositorioMotorista;
+import util.Util;
+import util.Util.*;
 
 public class ControllerMotorista {
     private ControllerMotorista() {}
@@ -146,5 +148,31 @@ public class ControllerMotorista {
         return null; // Se percorreu a lista toda e não achou, retorna null
     }
     
+    public static void salvarFoto(String cnh, byte[] bytesFoto) throws Exception {
+        if (cnh == null || cnh.trim().isEmpty()) {
+            throw new Exception("A CNH do motorista não foi informada.");
+        }
+        if (bytesFoto == null || bytesFoto.length == 0) {
+            throw new Exception("Nenhum dado de imagem válido foi detectado.");
+        }
+        try {
+            if (!Util.getManager().getTransaction().isActive()) {
+                Util.getManager().getTransaction().begin();
+            }
+            RepositorioMotorista repo = new RepositorioMotorista();
+            System.out.println("passei aqui " + cnh);
+            repo.salvarFoto(cnh, bytesFoto);
+
+            // 4. Salva permanentemente no banco de dados
+            Util.getManager().getTransaction().commit();
+            
+        } catch (Exception e) {
+            // Se algo der errado (banco fora do ar, erro de conversão, etc), desfaz as alterações
+            if (Util.getManager().getTransaction().isActive()) {
+                Util.getManager().getTransaction().rollback();
+            }
+            throw new Exception("Erro no controlador ao salvar foto: " + e.getMessage());
+        }
+    }
     
 }

@@ -11,6 +11,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
+import com.mysql.cj.util.Util;
+
 import model.Motorista;
 import model.Veiculo;
 import model.Viagem;
@@ -186,7 +188,7 @@ public class ControllerViagem {
 		}
 	}
 
-	public static void alterarViagem(int idSelecionada, String destino, String motorista, String placa, String cnh) throws Exception {
+	public static void alterarViagem(int idSelecionada, String destino, String NomeMotorista, String placa, String cnh) throws Exception {
 		try {
 			Repositorio.conectar();
 			Repositorio.begin();
@@ -196,16 +198,16 @@ public class ControllerViagem {
 				throw new Exception("alterar viagem - registro de viagem inexistente: " + destino);			
 			v.setDestino(destino);
 	        
-	        model.Motorista m = repMotorista.localizar(motorista); // Busque direto pelo repositório se tiver o método
+	        model.Motorista m = repMotorista.localizar(NomeMotorista);
 	        
 	        if (m != null) {
 	            v.setMotorista(m); 
 	            System.out.println("Alterando motorista existente");
 	        } else {
-	            // Se for criar, certifique-se de que o criar do repositório não dê outro "begin" ou use a mesma conexão
-	            m = new model.Motorista();
+	            //criando novo motorista
+	        	m = new model.Motorista();
 	            m.setCnh(cnh);
-	            m.setNome(motorista);
+	            m.setNome(NomeMotorista);
 	            repMotorista.criar(m); // persiste no mesmo gerenciador
 	            v.setMotorista(m);
 	            System.out.println("Criando novo motorista");
@@ -234,5 +236,27 @@ public class ControllerViagem {
 			Repositorio.desconectar();
 		}
 		
+	}
+	
+	public static Viagem localizarViagemComMotorista(int idViagem) throws Exception {
+	    // 1. Validação básica do ID recebido da tabela
+	    if (idViagem <= 0) {
+	        throw new Exception("ID de viagem inválido para busca.");
+	    }
+		try {
+			//Instancia o repositório de viagens
+	        RepositorioViagem repo = new RepositorioViagem();
+	        
+	        //Executa a busca especializada com o JOIN FETCH
+	        Viagem viagem = repo.localizarViagemComMotorista(idViagem);
+
+	        if (viagem == null) {
+	            throw new Exception("Viagem não encontrada no sistema.");
+	        }
+	        return viagem;
+		} finally {
+			Repositorio.desconectar();
+		}
+	
 	}
 }

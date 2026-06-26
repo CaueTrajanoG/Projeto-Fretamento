@@ -1,7 +1,6 @@
 package view;
 
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Image;
@@ -17,12 +16,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
 import javax.imageio.ImageIO;
-import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -42,6 +37,7 @@ import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.ScrollPaneConstants;
 
 public class TelaViagens {
 	protected static final Frame Frame = null;
@@ -50,24 +46,27 @@ public class TelaViagens {
 	private JDialog frame;
 	private JScrollPane scrollPane;
 	private JTable table;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
-	private JButton button_1;
-	private JButton button_3;
-	private JButton button_2;
-	private JButton button_4;
+	private JTextField textFieldDestino;
+	private JTextField textFieldMotorista;
+	private JTextField textFieldPlaca;
+	private JButton buttonCriar;
+	private JButton buttonApagar;
+	private JButton buttonAtualizar;
+	private JButton buttonLimpar;
 	private JButton btnCarregarFoto;
-	private JButton button_6;
+	private JButton buttonLimparFoto;
 	private JPanel panel;
 	private BufferedImage buffer; // armazena a foto na mem�ria durante a edicao
 	private int idSelecionada = 0;
-	private JTextField textField_3;
+	private JTextField textFieldCNH;
+	private JTextField textFieldData;
+
 
 	public TelaViagens() {
 		initialize();
 		frame.setVisible(true);
 	}
+
 	/**
 	 * @wbp.parser.entryPoint
 	 */
@@ -91,7 +90,7 @@ public class TelaViagens {
 		label = new JLabel("");
 		label.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		label.setForeground(Color.RED);
-		label.setBounds(26, 371, 600, 29);
+		label.setBounds(26, 371, 436, 29);
 		frame.getContentPane().add(label);
 
 		panel = new JPanel();
@@ -139,15 +138,34 @@ public class TelaViagens {
 				try {
 					label.setText("");
 					if (table.getSelectedRow() >= 0) {
-						// copiar a pessoa selecionada para formulario de edicao
+						// 1. Pega o ID da linha selecionada
 						int id = (int) table.getValueAt(table.getSelectedRow(), 0);
-						idSelecionada = id;
-						Viagem v = ControllerViagem.localizarViagem(id);
-						textField.setText(v.getDestino());
-						textField_1.setText(v.getMotorista().getNome());
-						textField_2.setText(v.getVeiculo().getPlaca());
-						textField_3.setText(v.getMotorista().getCnh());
+						
+						// 2. Busca a viagem completa trazendo o motorista pelo FETCH
+						Viagem v = ControllerViagem.localizarViagemComMotorista(id);
+						
+						// 3. Preenche os campos da tela usando a mesma variável 'v'
+						textFieldDestino.setText(v.getDestino());
+						
+						// Se a viagem tiver data, descomente a linha abaixo para preencher o campo data também:
+						// java.time.format.DateTimeFormatter formatador = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+						// textFieldData.setText(v.getData().format(formatador));
 
+						// Preenche os dados do motorista carregado via LAZY/FETCH com segurança
+						if (v.getMotorista() != null) {
+							textFieldMotorista.setText(v.getMotorista().getNome());
+							textFieldCNH.setText(v.getMotorista().getCnh());
+						} else {
+							textFieldMotorista.setText("Sem motorista");
+							textFieldCNH.setText("");
+						}
+
+						// Preenche os dados do veículo
+						if (v.getVeiculo() != null) {
+							textFieldPlaca.setText(v.getVeiculo().getPlaca());
+						} else {
+							textFieldPlaca.setText("");
+						}
 						// carregar foto
 						if (v.getMotorista().getFoto() != null) {
 							// converte byte[] para BufferedImage do icon do label
@@ -163,6 +181,7 @@ public class TelaViagens {
 							label_1.setText("sem foto"); // limpa a imagem
 							label_1.setIcon(null);
 						}
+
 					}
 				} catch (Exception erro) {
 					label.setText(erro.getMessage());
@@ -170,11 +189,11 @@ public class TelaViagens {
 			}
 		});
 
-		textField = new JTextField();
-		textField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-		textField.setBounds(111, 263, 179, 25);
-		frame.getContentPane().add(textField);
-		textField.setColumns(10);
+		textFieldDestino = new JTextField();
+		textFieldDestino.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		textFieldDestino.setBounds(111, 263, 179, 25);
+		frame.getContentPane().add(textFieldDestino);
+		textFieldDestino.setColumns(10);
 
 		JLabel lblNewLabel = new JLabel("Destino: ");
 		lblNewLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -186,72 +205,71 @@ public class TelaViagens {
 		lblNewLabel_1.setBounds(26, 299, 75, 25);
 		frame.getContentPane().add(lblNewLabel_1);
 
-		textField_1 = new JTextField();
-		textField_1.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-		textField_1.setColumns(10);
-		textField_1.setBounds(111, 300, 179, 25);
-		frame.getContentPane().add(textField_1);
+		textFieldMotorista = new JTextField();
+		textFieldMotorista.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		textFieldMotorista.setColumns(10);
+		textFieldMotorista.setBounds(111, 300, 179, 25);
+		frame.getContentPane().add(textFieldMotorista);
 
 		JLabel lblNewLabel_1_1 = new JLabel("Placa:");
 		lblNewLabel_1_1.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		lblNewLabel_1_1.setBounds(26, 335, 75, 25);
 		frame.getContentPane().add(lblNewLabel_1_1);
 
-		textField_2 = new JTextField();
-		textField_2.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-		textField_2.setColumns(10);
-		textField_2.setBounds(111, 336, 179, 25);
-		frame.getContentPane().add(textField_2);
+		textFieldPlaca = new JTextField();
+		textFieldPlaca.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		textFieldPlaca.setColumns(10);
+		textFieldPlaca.setBounds(111, 336, 179, 25);
+		frame.getContentPane().add(textFieldPlaca);
 
 		// botao para abrir tela de criação de nova viagem
-		button_1 = new JButton("Criar");
-		button_1.setToolTipText("cadastrar nova pessoa");
-		button_1.addMouseListener(new MouseAdapter() {
+		buttonCriar = new JButton("Criar");
+		buttonCriar.setToolTipText("cadastrar nova pessoa");
+		buttonCriar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				TelaCadastroViagem tela = new TelaCadastroViagem(Frame);
 				tela.setVisible(true);
 			}
 		});
-		button_1.setBounds(21, 411, 95, 23);
-		frame.getContentPane().add(button_1);
+		buttonCriar.setBounds(21, 411, 95, 23);
+		frame.getContentPane().add(buttonCriar);
 
-		button_2 = new JButton("Atualizar");
-		button_2.setToolTipText("atualizar viagem ");
-		button_2.addActionListener(new ActionListener() {
+		buttonAtualizar = new JButton("Atualizar");
+		buttonAtualizar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (textField_1.getText().isEmpty())
+				if (textFieldMotorista.getText().isEmpty())
 					label.setText("nome vazio");
 				else
 					atualizarViagemSelecionada();
 				label.setText("Registro de viagem atualizado.");
 			}
 		});
-		button_2.setBounds(126, 411, 95, 23);
-		frame.getContentPane().add(button_2);
+		buttonAtualizar.setBounds(126, 411, 95, 23);
+		frame.getContentPane().add(buttonAtualizar);
 
-		button_3 = new JButton("Apagar");
-		button_3.setToolTipText("apagar pessoa e seus dados");
+		buttonApagar = new JButton("Apagar");
+		buttonApagar.setToolTipText("apagar pessoa e seus dados");
 
-		button_3.setBounds(231, 411, 95, 23);
-		frame.getContentPane().add(button_3);
+		buttonApagar.setBounds(231, 411, 95, 23);
+		frame.getContentPane().add(buttonApagar);
 
-		button_4 = new JButton("Limpar");
-		button_4.addActionListener(new ActionListener() {
+		buttonLimpar = new JButton("Limpar");
+		buttonLimpar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				textField.setText("");
-				textField_1.setText("");
-				textField_2.setText("");
+				textFieldDestino.setText("");
+				textFieldMotorista.setText("");
+				textFieldPlaca.setText("");
 
 			}
 		});
-		button_4.setBounds(336, 411, 95, 23);
-		frame.getContentPane().add(button_4);
+		buttonLimpar.setBounds(336, 411, 95, 23);
+		frame.getContentPane().add(buttonLimpar);
 
 		btnCarregarFoto = new JButton("Carregar foto");
 		btnCarregarFoto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (textField_2.getText().isEmpty()) {
+				if (textFieldPlaca.getText().isEmpty()) {
 					label.setText("selecione uma pessoa");
 					return;
 				}
@@ -260,9 +278,10 @@ public class TelaViagens {
 					return; // arquivo nao foi selecionado
 
 				try {
-					buffer = ImageIO.read(file); // ler imagem do arquivo
+					buffer = ImageIO.read(file); 
+					System.out.println("-> FOTO CARREGADA NO BOTÃO: " + buffer);
 					ImageIcon icon = new ImageIcon(
-							buffer.getScaledInstance(buffer.getWidth(), buffer.getHeight(), Image.SCALE_DEFAULT));
+					buffer.getScaledInstance(buffer.getWidth(), buffer.getHeight(), Image.SCALE_DEFAULT));
 					icon.setImage(icon.getImage().getScaledInstance(label_1.getWidth(), label_1.getHeight(), 1));
 					label_1.setIcon(icon);
 					label.setText("Precisa atualizar/criar pessoa para salvar a foto");
@@ -274,98 +293,129 @@ public class TelaViagens {
 		btnCarregarFoto.setBounds(639, 374, 108, 23);
 		frame.getContentPane().add(btnCarregarFoto);
 
-		button_6 = new JButton("Limpar foto");
-		button_6.addActionListener(new ActionListener() {
+		buttonLimparFoto = new JButton("Limpar foto");
+		buttonLimparFoto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				buffer = null;
 				label_1.setIcon(null);
 				label_1.setText("sem foto");
 				label.setText("");
 				label.setText("Precisa atualizar/criar pessoa para salvar a foto");
-
 			}
 		});
-		button_6.setBounds(639, 408, 108, 23);
-		frame.getContentPane().add(button_6);
+		buttonLimparFoto.setBounds(639, 408, 108, 23);
+		frame.getContentPane().add(buttonLimparFoto);
 
-		textField_3 = new JTextField();
-		textField_3.setToolTipText("CNH");
-		textField_3.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-		textField_3.setColumns(10);
-		textField_3.setBounds(301, 300, 179, 25);
-		frame.getContentPane().add(textField_3);
+		textFieldCNH = new JTextField();
+		textFieldCNH.setToolTipText("CNH");
+		textFieldCNH.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		textFieldCNH.setColumns(10);
+		textFieldCNH.setBounds(341, 300, 179, 25);
+		frame.getContentPane().add(textFieldCNH);
+
+		textFieldData = new JTextField();
+		textFieldData.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		textFieldData.setColumns(10);
+		textFieldData.setBounds(340, 263, 179, 25);
+		frame.getContentPane().add(textFieldData);
+
+		JLabel lblData = new JLabel("Data: ");
+		lblData.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		lblData.setBounds(300, 262, 50, 25);
+		frame.getContentPane().add(lblData);
+
+		JLabel lblCnh = new JLabel("Cnh: ");
+		lblCnh.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		lblCnh.setBounds(300, 299, 60, 25);
+		frame.getContentPane().add(lblCnh);
 
 	}
 
 	// função que busca os dados
 	public void listagem() {
 		try {
-			// objeto model contem todas as linhas e colunas da tabela
 			DefaultTableModel model = new DefaultTableModel();
 			table.setModel(model);
-
-			// adicionar as colunas (0,1,2) do grid
+			
+			// colunas do grid
 			model.addColumn("Id");
 			model.addColumn("Destino");
-			model.addColumn("Motorista");
-			model.addColumn("Veiculo");
+			model.addColumn("Data");
 
 			// adicionar as linhas do grid
 			List<Viagem> lista = ControllerViagem.listarViagens();
-			System.out.println(lista.getFirst());
+			java.time.format.DateTimeFormatter formatador = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			
 			for (Viagem v : lista) {
-				model.addRow(new Object[] { v.getId(), v.getDestino(), v.getMotorista().getNome(),
-						v.getVeiculo().getPlaca() });
-			}
-			;
-
-			// label_2.setText("resultados: " + lista.size() + " pessoas - selecione uma
-			// linha para editar");
+				model.addRow(new Object[] { v.getId(), v.getDestino(), v.getData().format(formatador)});
+			};
+			
+			javax.swing.table.DefaultTableCellRenderer centralizado = new javax.swing.table.DefaultTableCellRenderer();
+	        centralizado.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+	        
+	        // Passa por cada coluna da tabela aplicando o alinhamento
+	        for (int i = 0; i < table.getColumnCount(); i++) {
+	            table.getColumnModel().getColumn(i).setCellRenderer(centralizado);
+	        }
 		} catch (Exception erro) {
-			// label.setText(erro.getMessage());
+			label.setText(erro.getMessage());
 		}
 	}
 
 	public File selecionarArquivoFoto() {
-		JFileChooser chooser = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("Imagens", "jpg", "gif");
-		chooser.setFileFilter(filter);
-		try {
-			// exibir pasta externa no Windows
-			// chooser.setCurrentDirectory(new File("c:\\"));
-			// exibir pasta interna \fotos
-			chooser.setCurrentDirectory(new File((new File(".").getCanonicalPath() + "\\src\\fotos")));
-		} catch (IOException e) {
-		}
-		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		chooser.showOpenDialog(null);
-		File file = chooser.getSelectedFile();
-		return file;
+	    JFileChooser chooser = new JFileChooser();	    
+	    FileNameExtensionFilter filter = new FileNameExtensionFilter("Imagens (*.jpg, *.jpeg, *.gif)", "jpg", "jpeg", "gif");
+	    chooser.setFileFilter(filter);
+	    
+	    try {
+	        File pastaFotos = new File("." + File.separator + "src" + File.separator + "fotos");	        
+	        if (pastaFotos.exists() && pastaFotos.isDirectory()) {
+	            chooser.setCurrentDirectory(pastaFotos);
+	        }
+	    } catch (Exception e) {
+	        // Registra o erro no console se a busca pela pasta falhar
+	        System.err.println("Erro ao definir diretório inicial: " + e.getMessage());
+	    }
+	    
+	    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+	    
+	    // Verifica se o usuário de fato clicou em "Abrir"
+	    int retorno = chooser.showOpenDialog(null);	    
+	    if (retorno == JFileChooser.APPROVE_OPTION) {
+	        return chooser.getSelectedFile();
+	    }	    
+	    // Retorna null se o usuário cancelou ou fechou a janela
+	    return null; 
 	}
 
 	public void atualizarViagemSelecionada() {
 		try {
-			label.setText("");
-			String destino = textField.getText();
-			String motorista = textField_1.getText();
-			String placa = textField_2.getText();
-			String cnh = textField_3.getText();
+			String destino = textFieldDestino.getText();
+			String motorista = textFieldMotorista.getText();
+			String placa = textFieldPlaca.getText();
+			String cnh = textFieldCNH.getText();	
 
-			ControllerViagem.alterarViagem(idSelecionada, destino, motorista, placa, cnh);
 
-//			// parte da foto
-//			byte[] bytesfoto = null;
-//			if (buffer != null)
-//				try {
-//					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//					ImageIO.write(buffer, "jpg", baos);
-//					bytesfoto = baos.toByteArray();
-//					baos.close();
-//				} catch (IOException ex1) {
-//					label.setText("problema na convers�o da imagem em bytes");
-//				}
-			// FachadaPessoa.alterarFoto(nome, bytesfoto);
+			// parte da foto
+			System.out.println("-> FOTO CARREGADA NO BOTÃO: " + buffer);
+			byte[] bytesfoto = null;
+			if (buffer != null)
+				try {
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					ImageIO.write(buffer, "jpg", baos);
+					bytesfoto = baos.toByteArray();
+					System.out.println(bytesfoto);
+					baos.close();
+				} catch (IOException ex1) {
+					label.setText("problema na conversao da imagem em bytes");
+				}
+			System.out.println("DEBUG: Executando o primeiro controller...");
+	        ControllerMotorista.salvarFoto(cnh, bytesfoto);
+	        System.out.println("DEBUG: Primeiro controller finalizou com sucesso!");
 
+	        System.out.println("DEBUG: Executando o segundo controller...");
+	        ControllerViagem.alterarViagem(idSelecionada, destino, cnh, placa, null);
+	        System.out.println("DEBUG: Segundo controller finalizou com sucesso!");
 			label.setText("Registro de viagem atualizado");
 			listagem();
 		} catch (Exception ex2) {

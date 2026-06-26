@@ -10,15 +10,15 @@ import java.util.List;
 public class Viagem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    
+    private int id;    
     private LocalDate data;
     private String destino;
 
     @ManyToOne
     private Veiculo veiculo;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) // LAZY
+    @JoinColumn(name = "motorista_cnh")
     private Motorista motorista;
 
     @ElementCollection
