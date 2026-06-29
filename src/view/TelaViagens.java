@@ -162,13 +162,13 @@ public class TelaViagens {
 
 							// --- TRATAMENTO DA FOTO ---
 							byte[] fotoBytes = viagemSelecionada.getMotorista().getFoto();
-							System.out.println(fotoBytes);
+							//System.out.println(fotoBytes);
 
 							if (fotoBytes != null && fotoBytes.length > 0) {
 								InputStream in = new ByteArrayInputStream(fotoBytes);
 
 								buffer = ImageIO.read(in);
-								System.out.println("-> DEBUG FOTO: O buffer gerado é: " + buffer);
+								//System.out.println("-> DEBUG FOTO: O buffer gerado é: " + buffer);
 								// Verifica se o ImageIO conseguiu gerar a imagem com sucesso antes de ler a
 								// largura/altura
 								if (buffer != null) {
@@ -424,7 +424,7 @@ public class TelaViagens {
 			String placa = textFieldPlaca.getText();
 			String cnh = textFieldCNH.getText();
 
-			System.out.println("DEBUG: Atualizando viagem ID: " + idSelecionada);
+			//System.out.println("DEBUG: Atualizando viagem ID: " + idSelecionada);
 
 			// Altera os dados textuais da viagem e o vínculo do motorista
 			FachadaViagem.alterarViagem(idSelecionada, destino, cnh, placa, null);
