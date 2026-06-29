@@ -10,11 +10,12 @@
 		<class>model.Motorista</class>
 		<class>model.Veiculo</class>
 		<class>model.Viagem</class>
+		<class>model.Usuario</class>
 		
 		<shared-cache-mode>NONE</shared-cache-mode>
 		<properties>
 			<property name="jakarta.persistence.jdbc.driver" 	value="org.postgresql.Driver" />
-			<property name="jakarta.persistence.jdbc.url"		value="jdbc:postgresql://localhost:5432/pob"/>  
+			<property name="jakarta.persistence.jdbc.url"		value="jdbc:postgresql://54.225.62.167:5432/pob"/>  
  			<property name="jakarta.persistence.jdbc.user"		value="postgres" />
 			<property name="jakarta.persistence.jdbc.password"	value="ifpb" />
 
