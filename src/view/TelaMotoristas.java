@@ -9,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
@@ -31,6 +32,9 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.border.TitledBorder;
+import javax.swing.SwingConstants;
 
 public class TelaMotoristas {
 	protected static final Frame Frame = null;
@@ -42,9 +46,8 @@ public class TelaMotoristas {
 	private JTextField textField_cnh;
 	private JLabel lblNewLabel;
 	private JLabel lblCnh;
-	private JLabel lblNewLabel_1;
 	private JTable table_historico;
-
+	private BufferedImage buffer;
 	public TelaMotoristas() {
 		initialize();
 		frame.setVisible(true);
@@ -66,7 +69,7 @@ public class TelaMotoristas {
 		frame.setResizable(false);
 		frame.setModal(true);
 		frame.setTitle("Registro de Motoristas");
-		frame.setBounds(100, 100, 572, 453);
+		frame.setBounds(100, 100, 572, 478);
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
@@ -102,36 +105,6 @@ public class TelaMotoristas {
 		table.setShowGrid(true);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
-		// Selecionar linha da tabela
-		table.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				try {
-					// label.setText("");
-					if (table.getSelectedRow() >= 0) {
-						// copiar a pessoa selecionada para formulario de edicao
-						String cnh = (String) table.getValueAt(table.getSelectedRow(), 1);
-						Motorista m = ControllerMotorista.localizarMotorista(cnh);
-						textField_nome.setText(m.getNome());
-						textField_cnh.setText(m.getCnh());
-
-						DefaultTableModel modelHist = new DefaultTableModel();
-						modelHist.addColumn("ID");
-						modelHist.addColumn("Destino");
-						table_historico.setModel(modelHist);
-
-						if (m.getListaViagem() != null) {
-							for (Viagem v : m.getListaViagem()) {
-								modelHist.addRow(new Object[] { v.getId(), v.getDestino() });
-							}
-						}
-					}
-				} catch (Exception erro) {
-					erro.printStackTrace();
-				}
-			}
-		});
-
 		JButton btnCadastrar = new JButton("Novo Motorista");
 		btnCadastrar.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		btnCadastrar.setBounds(171, 356, 132, 35);
@@ -158,7 +131,7 @@ public class TelaMotoristas {
 
 		btn_refresh = new JButton("Refresh");
 		btn_refresh.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-		btn_refresh.setBounds(325, 356, 103, 35);
+		btn_refresh.setBounds(316, 245, 103, 35);
 		btn_refresh.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -188,10 +161,6 @@ public class TelaMotoristas {
 		lblCnh.setBounds(28, 285, 118, 25);
 		frame.getContentPane().add(lblCnh);
 
-		lblNewLabel_1 = new JLabel("Foto vai aqui");
-		lblNewLabel_1.setBounds(341, 271, 72, 54);
-		frame.getContentPane().add(lblNewLabel_1);
-
 		JScrollPane scrollPane_historico = new JScrollPane();
 		scrollPane_historico.setBounds(316, 34, 230, 180);
 		frame.getContentPane().add(scrollPane_historico);
@@ -213,6 +182,83 @@ public class TelaMotoristas {
 		lblNewLabel_2_1.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		lblNewLabel_2_1.setBounds(316, 9, 103, 25);
 		frame.getContentPane().add(lblNewLabel_2_1);
+		
+		JPanel panelFoto = new JPanel();
+		panelFoto.setLayout(null);
+		panelFoto.setBorder(new TitledBorder("Foto"));
+		panelFoto.setBounds(438, 225, 108, 118);
+		frame.getContentPane().add(panelFoto);
+		
+		JLabel labelFoto = new JLabel("sem foto");
+		labelFoto.setHorizontalAlignment(SwingConstants.CENTER);
+		labelFoto.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		labelFoto.setBounds(10, 21, 88, 86);
+		panelFoto.add(labelFoto);
+		
+		JButton btnCarregarFoto = new JButton("+");
+		btnCarregarFoto.setFont(new Font("Segoe UI", Font.PLAIN, 10));
+		btnCarregarFoto.setBounds(448, 346, 39, 45);
+		frame.getContentPane().add(btnCarregarFoto);
+		
+		JButton btnLimparFoto = new JButton("X");
+		btnLimparFoto.setFont(new Font("Segoe UI", Font.PLAIN, 10));
+		btnLimparFoto.setBounds(497, 346, 39, 45);
+		frame.getContentPane().add(btnLimparFoto);
+		
+		JButton btnApagar = new JButton("Apagar");
+		btnApagar.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		btnApagar.setBounds(316, 356, 103, 35);
+		frame.getContentPane().add(btnApagar);
+		
+		JLabel label = new JLabel("");
+		label.setBounds(28, 402, 508, 26);
+		frame.getContentPane().add(label);		
+		
+		// Selecionar linha da tabela
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					// label.setText("");
+					if (table.getSelectedRow() >= 0) {
+						// copiar a pessoa selecionada para formulario de edicao
+						String cnh = (String) table.getValueAt(table.getSelectedRow(), 1);
+						Motorista m = ControllerMotorista.localizarMotorista(cnh);
+						textField_nome.setText(m.getNome());
+						textField_cnh.setText(m.getCnh());
+
+						DefaultTableModel modelHist = new DefaultTableModel();
+						modelHist.addColumn("ID");
+						modelHist.addColumn("Destino");
+						table_historico.setModel(modelHist);
+
+						if (m.getListaViagem() != null) {
+							for (Viagem v : m.getListaViagem()) {
+								modelHist.addRow(new Object[] { v.getId(), v.getDestino() });
+							}
+						}
+						
+						if (m.getFoto() != null) {
+							// converte byte[] para BufferedImage do icon do label
+							InputStream in = new ByteArrayInputStream(m.getFoto());
+							buffer = ImageIO.read(in);
+							ImageIcon icon = new ImageIcon(buffer.getScaledInstance(buffer.getWidth(),
+									buffer.getHeight(), Image.SCALE_DEFAULT));
+							icon.setImage(
+									icon.getImage().getScaledInstance(labelFoto.getWidth(), labelFoto.getHeight(), 1));
+							labelFoto.setIcon(icon);
+						} else {
+							buffer = null;
+							labelFoto.setText("sem foto"); // limpa a imagem
+							labelFoto.setIcon(null);
+						}
+						
+					}
+				} catch (Exception erro) {
+					erro.printStackTrace();
+				}
+			}
+		});
 	}
 
 	// função que busca os dados
@@ -230,11 +276,9 @@ public class TelaMotoristas {
 			List<Motorista> lista = ControllerMotorista.listarMotoristas();
 			for (Motorista m : lista) {
 				model.addRow(new Object[] { m.getNome(), m.getCnh() });
-			}
-			;
+			};	
 
-			// label_2.setText("resultados: " + lista.size() + " pessoas - selecione uma
-			// linha para editar");
+
 		} catch (Exception erro) {
 			// label.setText(erro.getMessage());
 		}
@@ -258,6 +302,36 @@ public class TelaMotoristas {
 	    } catch (Exception ex2) {
 	        JOptionPane.showMessageDialog(frame, "Erro ao atualizar: " + ex2.getMessage());
 	        ex2.printStackTrace();
+	    }
+	}
+	
+	public void apagarMotoristaSelecionado(String cnh) {
+	    try {
+	        if (cnh == null || cnh.trim().isEmpty()) {
+	        	int resposta = javax.swing.JOptionPane.showConfirmDialog(
+	    	            frame, 
+	    	            "Motorista não selecionado"	    	         
+	    	        );
+	        	//label.setText("Selecione um motorista na tabela para apagar.");
+	            return;
+	        }
+	        // Confirmação visual para evitar que o usuário apague sem querer
+	        int resposta = javax.swing.JOptionPane.showConfirmDialog(
+	            frame, 
+	            "Tem certeza que deseja apagar o motorista de CNH " + cnh + "?", 
+	            "Confirmar Exclusão", 
+	            javax.swing.JOptionPane.YES_NO_OPTION
+	        );
+	        if (resposta == javax.swing.JOptionPane.YES_OPTION) {
+	            // 3. Chama o Controller para realizar a exclusão no banco de dados
+	            ControllerMotorista.apagarMotorista(cnh);	            
+	            buffer = null; // Reseta o buffer de imagem se houver	                        
+	            listagem(); 
+	        }
+
+	    } catch (Exception erro) {
+	        // Se houver viagens vinculadas a esse motorista, a Exception do banco será capturada aqui
+	        //label.setText("Erro ao apagar: " + erro.getMessage());
 	    }
 	}
 }

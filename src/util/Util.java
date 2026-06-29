@@ -1,9 +1,3 @@
-/**********************************
- * IFPB - SI
- * POB - Persistencia de Objetos
- * Prof. Fausto Ayres
- **********************************/
-
 package util;
 
 import java.io.IOException;

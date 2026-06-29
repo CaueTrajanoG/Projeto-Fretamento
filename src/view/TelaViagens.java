@@ -42,7 +42,7 @@ import javax.swing.ScrollPaneConstants;
 public class TelaViagens {
 	protected static final Frame Frame = null;
 	private JLabel label;
-	private JLabel label_1;
+	private JLabel labelFoto;
 	private JDialog frame;
 	private JScrollPane scrollPane;
 	private JTable table;
@@ -55,7 +55,7 @@ public class TelaViagens {
 	private JButton buttonLimpar;
 	private JButton btnCarregarFoto;
 	private JButton buttonLimparFoto;
-	private JPanel panel;
+	private JPanel panelFoto;
 	private BufferedImage buffer; // armazena a foto na mem�ria durante a edicao
 	private int idSelecionada = 0;
 	private JTextField textFieldCNH;
@@ -93,19 +93,19 @@ public class TelaViagens {
 		label.setBounds(26, 371, 436, 29);
 		frame.getContentPane().add(label);
 
-		panel = new JPanel();
-		panel.setLayout(null);
-		panel.setBorder(new TitledBorder("Foto"));
-		panel.setBounds(639, 245, 108, 118);
-		frame.getContentPane().add(panel);
+		panelFoto = new JPanel();
+		panelFoto.setLayout(null);
+		panelFoto.setBorder(new TitledBorder("Foto"));
+		panelFoto.setBounds(639, 245, 108, 118);
+		frame.getContentPane().add(panelFoto);
 
 		// FOTO
-		label_1 = new JLabel("sem foto");
-		label_1.setHorizontalAlignment(SwingConstants.CENTER);
-		label_1.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		labelFoto = new JLabel("sem foto");
+		labelFoto.setHorizontalAlignment(SwingConstants.CENTER);
+		labelFoto.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		// label_1.setHorizontalAlignment(SwingConstants.CENTER);
-		label_1.setBounds(10, 21, 78, 73);
-		panel.add(label_1);
+		labelFoto.setBounds(10, 21, 88, 86);
+		panelFoto.add(labelFoto);
 
 		scrollPane = new JScrollPane();
 		scrollPane.setBounds(26, 34, 715, 200);
@@ -138,20 +138,16 @@ public class TelaViagens {
 				try {
 					label.setText("");
 					if (table.getSelectedRow() >= 0) {
-						// 1. Pega o ID da linha selecionada
+						// Pega o ID da linha selecionada
 						int id = (int) table.getValueAt(table.getSelectedRow(), 0);
 						
-						// 2. Busca a viagem completa trazendo o motorista pelo FETCH
+						// Busca a viagem completa trazendo o motorista, por causa do lazy
 						Viagem v = ControllerViagem.localizarViagemComMotorista(id);
 						
-						// 3. Preenche os campos da tela usando a mesma variável 'v'
+						//Preenche os campos da tela
 						textFieldDestino.setText(v.getDestino());
 						
-						// Se a viagem tiver data, descomente a linha abaixo para preencher o campo data também:
-						// java.time.format.DateTimeFormatter formatador = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
-						// textFieldData.setText(v.getData().format(formatador));
-
-						// Preenche os dados do motorista carregado via LAZY/FETCH com segurança
+						// Preenche os dados do motorista carregado via LAZY/FETCH
 						if (v.getMotorista() != null) {
 							textFieldMotorista.setText(v.getMotorista().getNome());
 							textFieldCNH.setText(v.getMotorista().getCnh());
@@ -174,12 +170,12 @@ public class TelaViagens {
 							ImageIcon icon = new ImageIcon(buffer.getScaledInstance(buffer.getWidth(),
 									buffer.getHeight(), Image.SCALE_DEFAULT));
 							icon.setImage(
-									icon.getImage().getScaledInstance(label_1.getWidth(), label_1.getHeight(), 1));
-							label_1.setIcon(icon);
+									icon.getImage().getScaledInstance(labelFoto.getWidth(), labelFoto.getHeight(), 1));
+							labelFoto.setIcon(icon);
 						} else {
 							buffer = null;
-							label_1.setText("sem foto"); // limpa a imagem
-							label_1.setIcon(null);
+							labelFoto.setText("sem foto"); // limpa a imagem
+							labelFoto.setIcon(null);
 						}
 
 					}
@@ -282,8 +278,8 @@ public class TelaViagens {
 					System.out.println("-> FOTO CARREGADA NO BOTÃO: " + buffer);
 					ImageIcon icon = new ImageIcon(
 					buffer.getScaledInstance(buffer.getWidth(), buffer.getHeight(), Image.SCALE_DEFAULT));
-					icon.setImage(icon.getImage().getScaledInstance(label_1.getWidth(), label_1.getHeight(), 1));
-					label_1.setIcon(icon);
+					icon.setImage(icon.getImage().getScaledInstance(labelFoto.getWidth(), labelFoto.getHeight(), 1));
+					labelFoto.setIcon(icon);
 					label.setText("Precisa atualizar/criar pessoa para salvar a foto");
 				} catch (IOException ex) {
 					label.setText(ex.getMessage());
@@ -297,8 +293,8 @@ public class TelaViagens {
 		buttonLimparFoto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				buffer = null;
-				label_1.setIcon(null);
-				label_1.setText("sem foto");
+				labelFoto.setIcon(null);
+				labelFoto.setText("sem foto");
 				label.setText("");
 				label.setText("Precisa atualizar/criar pessoa para salvar a foto");
 			}
