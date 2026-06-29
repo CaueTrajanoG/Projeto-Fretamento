@@ -21,10 +21,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
-import controller.ControllerMotorista;
-import controller.ControllerViagem;
 import model.Motorista;
 import model.Viagem;
+import requisito.FachadaMotorista;
+import requisito.FachadaViagem;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -223,7 +223,7 @@ public class TelaMotoristas {
 					if (table.getSelectedRow() >= 0) {
 						// copiar a pessoa selecionada para formulario de edicao
 						String cnh = (String) table.getValueAt(table.getSelectedRow(), 1);
-						Motorista m = ControllerMotorista.localizarMotorista(cnh);
+						Motorista m = FachadaMotorista.localizarMotorista(cnh);
 						textField_nome.setText(m.getNome());
 						textField_cnh.setText(m.getCnh());
 
@@ -273,7 +273,7 @@ public class TelaMotoristas {
 			model.addColumn("CNH");
 
 			// adicionar as linhas do grid
-			List<Motorista> lista = ControllerMotorista.listarMotoristas();
+			List<Motorista> lista = FachadaMotorista.listarMotoristas();
 			for (Motorista m : lista) {
 				model.addRow(new Object[] { m.getNome(), m.getCnh() });
 			};	
@@ -290,11 +290,11 @@ public class TelaMotoristas {
 	        String cnhDigitada = textField_cnh.getText();  // Campo de baixo (CNH)
 
 	        // 1. Primeiro validamos se a CNH realmente existe no banco
-	        Motorista m = ControllerMotorista.localizarMotorista(cnhDigitada);
+	        Motorista m = FachadaMotorista.localizarMotorista(cnhDigitada);
 	        if (m == null) {
 	            JOptionPane.showMessageDialog(frame, "Motorista não encontrado com a CNH: " + cnhDigitada);
 	        } else { 
-	            ControllerMotorista.alterarMotorista(cnhDigitada, nomeDigitado);	            
+	            FachadaMotorista.alterarMotorista(cnhDigitada, nomeDigitado);	            
 	            JOptionPane.showMessageDialog(frame, "Motorista atualizado com sucesso!");
 	        }
 	        listagem(); // Recarrega a tabela e limpa as seleções antigas
@@ -324,7 +324,7 @@ public class TelaMotoristas {
 	        );
 	        if (resposta == javax.swing.JOptionPane.YES_OPTION) {
 	            // 3. Chama o Controller para realizar a exclusão no banco de dados
-	            ControllerMotorista.apagarMotorista(cnh);	            
+	            FachadaMotorista.apagarMotorista(cnh);	            
 	            buffer = null; // Reseta o buffer de imagem se houver	                        
 	            listagem(); 
 	        }

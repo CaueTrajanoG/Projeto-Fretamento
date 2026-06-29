@@ -1,4 +1,4 @@
-package controller;
+package requisito;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import model.Veiculo;
 import repositorio.Repositorio;
 import repositorio.RepositorioVeiculo;
 
-public class ControllerVeiculo {
-	private ControllerVeiculo() {}
+public class FachadaVeiculo {
+	private FachadaVeiculo() {}
 
     private static RepositorioVeiculo repVeiculo = new RepositorioVeiculo();
 

@@ -16,11 +16,11 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
-import controller.ControllerMotorista;
-import controller.ControllerVeiculo;
 import model.Motorista;
 import model.Veiculo;
 import model.Viagem;
+import requisito.FachadaMotorista;
+import requisito.FachadaVeiculo;
 
 import javax.swing.JTextField;
 import javax.swing.JLabel;
@@ -91,7 +91,7 @@ public class TelaVeiculos {
 					if (table.getSelectedRow() >= 0) {
 						// copiar a pessoa selecionada para formulario de edicao
 						String placa = (String) table.getValueAt(table.getSelectedRow(), 0);
-						Veiculo v = ControllerVeiculo.buscarVeiculoPorPlaca(placa);
+						Veiculo v = FachadaVeiculo.buscarVeiculoPorPlaca(placa);
 						textFieldPlaca.setText(v.getPlaca());
 						textFieldCapacidade.setText(String.valueOf(v.getCapacidade()));	
 					}
@@ -157,7 +157,7 @@ public class TelaVeiculos {
 			model.addColumn("Capacidade");
 			
 			// adicionar as linhas do grid
-			List<Veiculo> lista = ControllerVeiculo.listarVeiculos();
+			List<Veiculo> lista = FachadaVeiculo.listarVeiculos();
 			for (Veiculo v : lista) {
 				model.addRow(new Object[] { v.getPlaca(), v.getCapacidade() });
 			};

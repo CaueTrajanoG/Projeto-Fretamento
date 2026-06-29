@@ -7,11 +7,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import controller.ControllerViagem;
-import controller.ControllerMotorista;
-import controller.ControllerVeiculo;
 import model.Motorista;
 import model.Veiculo;
+import requisito.FachadaMotorista;
+import requisito.FachadaVeiculo;
+import requisito.FachadaViagem;
 
 public class TelaCadastroViagem extends JDialog {
 
@@ -105,7 +105,7 @@ public class TelaCadastroViagem extends JDialog {
 
     private void carregarMotoristas() {
         try {
-            List<Motorista> motoristas = ControllerMotorista.listarMotoristas(); 
+            List<Motorista> motoristas = FachadaMotorista.listarMotoristas(); 
             for (Motorista m : motoristas) {
                 comboMotorista.addItem(m);
             }
@@ -116,7 +116,7 @@ public class TelaCadastroViagem extends JDialog {
 
     private void carregarVeiculos() {
         try {
-            List<Veiculo> veiculos = ControllerVeiculo.listarVeiculos(); 
+            List<Veiculo> veiculos = FachadaVeiculo.listarVeiculos(); 
             for (Veiculo v : veiculos) {
                 comboVeiculo.addItem(v);
             }
@@ -142,7 +142,7 @@ public class TelaCadastroViagem extends JDialog {
                 throw new Exception("É necessário selecionar um motorista e um veículo válidos.");
             }
 
-            ControllerViagem.criarViagem(data, destino, motoristaSelecionado, veiculoSelecionado);
+            FachadaViagem.criarViagem(data, destino, motoristaSelecionado, veiculoSelecionado);
 
             JOptionPane.showMessageDialog(this, "Viagem salva com sucesso!");
             dispose(); 

@@ -2,8 +2,10 @@ package view;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+import requisito.FachadaMotorista;
+
 import java.awt.*;
-import controller.ControllerMotorista;
 
 public class TelaCadastroMotorista extends JDialog {
 	private JTextField textField_Motorista;
@@ -89,8 +91,8 @@ public class TelaCadastroMotorista extends JDialog {
 			// cadastrar novo motorista
 			String nome = textField_Motorista.getText();
 			String cnh = textField_cnh.getText();
-			if(ControllerMotorista.localizarMotorista(cnh)== null) {
-				ControllerMotorista.criarMotorista(cnh, nome);
+			if(FachadaMotorista.localizarMotorista(cnh)== null) {
+				FachadaMotorista.criarMotorista(cnh, nome);
 				System.out.println("Novo motorista cadastrado com sucesso...");
 				dispose(); 
 			}else {

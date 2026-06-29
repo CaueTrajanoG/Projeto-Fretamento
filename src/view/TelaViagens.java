@@ -30,9 +30,10 @@ import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
-import controller.ControllerMotorista;
-import controller.ControllerViagem;
 import model.Viagem;
+import requisito.FachadaMotorista;
+import requisito.FachadaViagem;
+
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -142,7 +143,7 @@ public class TelaViagens {
 						int id = (int) table.getValueAt(table.getSelectedRow(), 0);
 						
 						// Busca a viagem completa trazendo o motorista, por causa do lazy
-						Viagem v = ControllerViagem.localizarViagemComMotorista(id);
+						Viagem v = FachadaViagem.localizarViagemComMotorista(id);
 						
 						//Preenche os campos da tela
 						textFieldDestino.setText(v.getDestino());
@@ -339,7 +340,7 @@ public class TelaViagens {
 			model.addColumn("Data");
 
 			// adicionar as linhas do grid
-			List<Viagem> lista = ControllerViagem.listarViagens();
+			List<Viagem> lista = FachadaViagem.listarViagens();
 			java.time.format.DateTimeFormatter formatador = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
 			
 			for (Viagem v : lista) {
@@ -406,11 +407,11 @@ public class TelaViagens {
 					label.setText("problema na conversao da imagem em bytes");
 				}
 			System.out.println("DEBUG: Executando o primeiro controller...");
-	        ControllerMotorista.salvarFoto(cnh, bytesfoto);
+	        FachadaMotorista.salvarFoto(cnh, bytesfoto);
 	        System.out.println("DEBUG: Primeiro controller finalizou com sucesso!");
 
 	        System.out.println("DEBUG: Executando o segundo controller...");
-	        ControllerViagem.alterarViagem(idSelecionada, destino, cnh, placa, null);
+	        FachadaViagem.alterarViagem(idSelecionada, destino, cnh, placa, null);
 	        System.out.println("DEBUG: Segundo controller finalizou com sucesso!");
 			label.setText("Registro de viagem atualizado");
 			listagem();

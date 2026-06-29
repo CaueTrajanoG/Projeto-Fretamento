@@ -1,4 +1,4 @@
-package controller;
+package requisito;
 
 /**********************************
  * IFPB - SI
@@ -21,8 +21,8 @@ import repositorio.RepositorioViagem;
 import repositorio.RepositorioMotorista; // Supondo que existam estes repositórios
 import repositorio.RepositorioVeiculo;
 
-public class ControllerViagem {
-	private ControllerViagem() {
+public class FachadaViagem {
+	private FachadaViagem() {
 	}
 
 	private static RepositorioViagem repViagem = new RepositorioViagem();

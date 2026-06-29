@@ -1,162 +1,178 @@
 package requisito;
 
 import java.util.List;
+
 import model.Motorista;
 import repositorio.Repositorio;
 import repositorio.RepositorioMotorista;
+import util.Util;
+import util.Util.*;
 
 public class FachadaMotorista {
-	
-	// Construtor privado para impedir instanciação (Padrão Singleton/Static)
-	private FachadaMotorista() {}
-	
-	private static RepositorioMotorista repMotorista = new RepositorioMotorista();
+    private FachadaMotorista() {}
 
-	/*
-	 *
-	 * Localiza um motorista pela CNH.
-	 */
-	public static Motorista localizarMotorista(String cnh) throws Exception {
-		try {
-			Repositorio.conectar();
-			Motorista m = repMotorista.localizar(cnh);
-			return m;
-		} catch (Exception e) {
-			throw e;
-		} finally {
-			Repositorio.desconectar();
-		}
-	}
+    private static RepositorioMotorista repMotorista = new RepositorioMotorista();
 
-	/**
-	 * Cria um novo motorista com validações de negócio.
-	 * Inclui o parâmetro byte[] foto para cumprir a exigência do roteiro.
-	 */
-	public static void criarMotorista(String cnh, String nome, byte[] foto) throws Exception {
-		try {
-			// Validações básicas de preenchimento
-			if (cnh == null || cnh.trim().isEmpty())
-				throw new Exception("criar motorista - CNH obrigatoria.");
-			if (nome == null || nome.trim().isEmpty())
-				throw new Exception("criar motorista - nome obrigatorio.");
+    // ==========================================
+    // LOCALIZAR MOTORISTA
+    // ==========================================
+    public static Motorista localizarMotorista(String cnh) throws Exception {
+        try {
+            Repositorio.conectar();
+            Motorista m = repMotorista.localizar(cnh); // Busca pela CNH (ou ID correspondente)
+            return m;
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            Repositorio.desconectar();
+        }
+    }
 
-			Repositorio.conectar();
-			Repositorio.begin();
+    // ==========================================
+    // CRIAR MOTORISTA
+    // ==========================================
+    public static void criarMotorista(String cnh, String nome) throws Exception {
+        try {
+            Repositorio.conectar();
+            Repositorio.begin();
 
-			// Validação de duplicidade: não podem existir dois motoristas com a mesma CNH
-			Motorista m = repMotorista.localizar(cnh);
-			if (m != null)
-				throw new Exception("criar motorista - CNH ja cadastrada: " + cnh);
+            // 1. Validação básica de campos vazios
+            if (cnh == null || cnh.isBlank())
+                throw new Exception("Criar motorista - CNH é obrigatória.");
+            if (nome == null || nome.isBlank())
+                throw new Exception("Criar motorista - Nome é obrigatório.");
 
-			// Instancia e configura o objeto de modelo
-			Motorista novoMotorista = new Motorista(cnh, nome);
-			novoMotorista.setFoto(foto); // Atributo exigido pelo roteiro
+            // 2. Validação de Regra de Negócio: Evitar CNH duplicada
+            Motorista m = repMotorista.localizar(cnh);
+            if (m != null) {
+            	System.out.println("CNH duplicada");
+                throw new Exception("Criar motorista - Já existe um motorista cadastrado com esta CNH: " + cnh);
+                
+            }
+            // 3. Instanciação e persistência do objeto
+            m = new Motorista();
+            m.setCnh(cnh);
+            m.setNome(nome);
+            
+            
+            repMotorista.criar(m);
+            Repositorio.commit();
 
-			// Salva no banco de dados através do repositório
-			repMotorista.criar(novoMotorista);
-			Repositorio.commit();
+        } catch (Exception e) {
+            Repositorio.rollback();
+            throw e;
+        } finally {
+            Repositorio.desconectar();
+        }
+    }
 
-		} catch (Exception e) {
-			Repositorio.rollback();
-			throw e;
-		} finally {
-			Repositorio.desconectar();
-		}
-	}
+    // ==========================================
+    // ALTERAR MOTORISTA
+    // ==========================================
+    public static void alterarMotorista(String cnh, String novoNome) throws Exception {
+        try {
+            Repositorio.conectar();
+            Repositorio.begin();
+            
+            // Localiza o motorista existente
+            Motorista m = repMotorista.localizar(cnh);
+            if (m == null)
+                throw new Exception("Alterar motorista - Motorista não encontrado com a CNH: " + cnh);
 
-	/**
-	 * Altera os dados de um motorista existente.
-	 */
-	public static void alterarMotorista(String cnh, String novoNome, byte[] novaFoto) throws Exception {
-		try {
-			if (novoNome == null || novoNome.trim().isEmpty())
-				throw new Exception("alterar motorista - nome nao pode ser vazio.");
+            // Atualiza os dados se eles forem enviados válidos
+            if (novoNome != null && !novoNome.isBlank()) {
+                m.setNome(novoNome);
+            }
 
-			Repositorio.conectar();
-			Repositorio.begin();
+            repMotorista.atualizar(m); 
+            Repositorio.commit();
 
-			// Verifica se o motorista realmente existe antes de alterar
-			Motorista m = repMotorista.localizar(cnh);
-			if (m == null)
-				throw new Exception("alterar motorista - CNH inexistente: " + cnh);
+        } catch (Exception e) {
+            Repositorio.rollback();
+            throw e;
+        } finally {
+            Repositorio.desconectar();
+        }
+    }
 
-			// Atualiza os atributos
-			m.setNome(novoNome);
-			if (novaFoto != null) {
-				m.setFoto(novaFoto);
-			}
+    // ==========================================
+    // APAGAR MOTORISTA
+    // ==========================================
+    public static void apagarMotorista(String cnh) throws Exception {
+        try {
+            Repositorio.conectar();
+            Repositorio.begin();
+            
+            Motorista m = repMotorista.localizar(cnh);
+            if (m == null)
+                throw new Exception("Excluir motorista - Motorista inexistente com a CNH: " + cnh);
 
-			repMotorista.atualizar(m);
-			Repositorio.commit();
+            // ⚠️ ALERTA DE REGRA DE NEGÓCIO: 
+            // Se o motorista estiver vinculado a alguma Viagem, o Hibernate pode lançar um erro 
+            // de chave estrangeira (Constraint Violation). Idealmente, você deve validar isso antes.
+            
+            repMotorista.deletar(m);   
+            Repositorio.commit();
+            
+        } catch (Exception e) {
+            Repositorio.rollback();
+            throw e;
+        } finally {
+            Repositorio.desconectar();
+        }
+    }
 
-		} catch (Exception e) {
-			Repositorio.rollback();
-			throw e;
-		} finally {
-			Repositorio.desconectar();
-		}
-	}
+    // ==========================================
+    // LISTAGENS E FILTROS
+    // ==========================================
+    public static List<Motorista> listarMotoristas() {
+        Repositorio.conectar();
+        List<Motorista> lista = repMotorista.listar();
+        Repositorio.desconectar();
+        return lista;
+    }
 
-	/**
-	 * Remove um motorista do sistema (opcional, mas recomendado para o CRUD completo).
-	 */
-	public static void excluirMotorista(String cnh) throws Exception {
-		try {
-			Repositorio.conectar();
-			Repositorio.begin();
+ // Buscar um único motorista pelo nome
+    public static Motorista buscarMotoristaPorNome(String nome) {
+        Repositorio.conectar();
+        List<Motorista> lista = repMotorista.listarPorNome(nome);
+        Repositorio.desconectar();
 
-			Motorista m = repMotorista.localizar(cnh);
-			if (m == null)
-				throw new Exception("excluir motorista - CNH inexistente: " + cnh);
+        // Varre a lista procurando o motorista
+        for (Motorista m : lista) {
+            // equalsIgnoreCase garante que "caue" ou "Caue" funcionem igual
+            if (m.getNome().equalsIgnoreCase(nome)) {
+                return m; // Encontrou! Retorna o objeto e para o método
+            }
+        }
+        return null; // Se percorreu a lista toda e não achou, retorna null
+    }
+    
+    public static void salvarFoto(String cnh, byte[] bytesFoto) throws Exception {
+        if (cnh == null || cnh.trim().isEmpty()) {
+            throw new Exception("A CNH do motorista não foi informada.");
+        }
+        if (bytesFoto == null || bytesFoto.length == 0) {
+            throw new Exception("Nenhum dado de imagem válido foi detectado.");
+        }
+        try {
+            if (!Util.getManager().getTransaction().isActive()) {
+                Util.getManager().getTransaction().begin();
+            }
+            RepositorioMotorista repo = new RepositorioMotorista();
+            System.out.println("passei aqui " + cnh);
+            repo.salvarFoto(cnh, bytesFoto);
 
-			// Regra de negócio implícita: Verificar se o motorista possui viagens vinculadas antes de excluir
-			if (m.getListaViagem() != null && !m.getListaViagem().isEmpty()) {
-				throw new Exception("excluir motorista - nao eh possivel excluir um motorista com viagens vinculadas.");
-			}
-
-			repMotorista.deletar(m);
-			Repositorio.commit();
-
-		} catch (Exception e) {
-			Repositorio.rollback();
-			throw e;
-		} finally {
-			Repositorio.desconectar();
-		}
-	}
-
-	/**
-	 * Lista todos os motoristas cadastrados.
-	 */
-	public static List<Motorista> listarMotoristas() {
-		Repositorio.conectar();
-		List<Motorista> result = repMotorista.listar();
-		Repositorio.desconectar();
-		return result;
-	}
-
-	/**********************************************************
-	 * * CONSULTAS IMPLEMENTADAS NOS REPOSITORIOS
-	 * **********************************************************/
-
-	/**
-	 * Consulta 3: quais os motoristas que tem mais de N viagens com destino X
-	 */
-	public static List<Motorista> consultarMotoristasPorQtdViagensEDestino(int n, String destino) throws Exception {
-		try {
-			if (n < 0)
-				throw new Exception("consulta - a quantidade N de viagens deve ser maior ou igual a zero.");
-			if (destino == null || destino.trim().isEmpty())
-				throw new Exception("consulta - o destino deve ser informado.");
-
-			Repositorio.conectar();
-			// Chama a consulta customizada por JPQL que você vai criar dentro do RepositorioMotorista
-			List<Motorista> result = repMotorista.consultarMotoristasPorQtdViagensEDestino(n, destino);
-			return result;
-		} catch (Exception e) {
-			throw e;
-		} finally {
-			Repositorio.desconectar();
-		}
-	}
+            // 4. Salva permanentemente no banco de dados
+            Util.getManager().getTransaction().commit();
+            
+        } catch (Exception e) {
+            // Se algo der errado (banco fora do ar, erro de conversão, etc), desfaz as alterações
+            if (Util.getManager().getTransaction().isActive()) {
+                Util.getManager().getTransaction().rollback();
+            }
+            throw new Exception("Erro no controlador ao salvar foto: " + e.getMessage());
+        }
+    }
+    
 }
