@@ -5,6 +5,8 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -43,11 +45,12 @@ public class TelaMotoristas {
 	private JTable table;
 	private JButton btn_refresh;
 	private JTextField textField_nome;
-	private JTextField textField_cnh;
+	private JTextField textFieldCnh;
 	private JLabel lblNewLabel;
 	private JLabel lblCnh;
 	private JTable table_historico;
 	private BufferedImage buffer;
+	private JLabel labelFoto = new JLabel("sem foto");
 	public TelaMotoristas() {
 		initialize();
 		frame.setVisible(true);
@@ -146,10 +149,10 @@ public class TelaMotoristas {
 		frame.getContentPane().add(textField_nome);
 		textField_nome.setColumns(10);
 
-		textField_cnh = new JTextField();
-		textField_cnh.setColumns(10);
-		textField_cnh.setBounds(28, 303, 275, 35);
-		frame.getContentPane().add(textField_cnh);
+		textFieldCnh = new JTextField();
+		textFieldCnh.setColumns(10);
+		textFieldCnh.setBounds(28, 303, 275, 35);
+		frame.getContentPane().add(textFieldCnh);
 
 		lblNewLabel = new JLabel("Nome");
 		lblNewLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
@@ -189,7 +192,7 @@ public class TelaMotoristas {
 		panelFoto.setBounds(438, 225, 108, 118);
 		frame.getContentPane().add(panelFoto);
 		
-		JLabel labelFoto = new JLabel("sem foto");
+
 		labelFoto.setHorizontalAlignment(SwingConstants.CENTER);
 		labelFoto.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		labelFoto.setBounds(10, 21, 88, 86);
@@ -209,6 +212,13 @@ public class TelaMotoristas {
 		btnApagar.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		btnApagar.setBounds(316, 356, 103, 35);
 		frame.getContentPane().add(btnApagar);
+		btnApagar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// Captura a CNH atual do campo de texto antes de chamar a exclusão
+				String cnhSelecionada = textFieldCnh.getText();
+				apagarMotoristaSelecionado(cnhSelecionada);
+			}
+		});
 		
 		JLabel label = new JLabel("");
 		label.setBounds(28, 402, 508, 26);
@@ -225,7 +235,7 @@ public class TelaMotoristas {
 						String cnh = (String) table.getValueAt(table.getSelectedRow(), 1);
 						Motorista m = FachadaMotorista.localizarMotorista(cnh);
 						textField_nome.setText(m.getNome());
-						textField_cnh.setText(m.getCnh());
+						textFieldCnh.setText(m.getCnh());
 
 						DefaultTableModel modelHist = new DefaultTableModel();
 						modelHist.addColumn("ID");
@@ -287,7 +297,7 @@ public class TelaMotoristas {
 	public void atualizarMotorista() {
 	    try {
 	        String nomeDigitado = textField_nome.getText();   // Campo de cima (Nome)
-	        String cnhDigitada = textField_cnh.getText();  // Campo de baixo (CNH)
+	        String cnhDigitada = textFieldCnh.getText();  // Campo de baixo (CNH)
 
 	        // 1. Primeiro validamos se a CNH realmente existe no banco
 	        Motorista m = FachadaMotorista.localizarMotorista(cnhDigitada);
@@ -307,31 +317,66 @@ public class TelaMotoristas {
 	
 	public void apagarMotoristaSelecionado(String cnh) {
 	    try {
+	        // Validação se a CNH é válida
 	        if (cnh == null || cnh.trim().isEmpty()) {
-	        	int resposta = javax.swing.JOptionPane.showConfirmDialog(
-	    	            frame, 
-	    	            "Motorista não selecionado"	    	         
-	    	        );
-	        	//label.setText("Selecione um motorista na tabela para apagar.");
+	            javax.swing.JOptionPane.showMessageDialog(
+	                frame, 
+	                "Motorista não selecionado. Selecione um registro na tabela.", 
+	                "Aviso", 
+	                javax.swing.JOptionPane.WARNING_MESSAGE
+	            );
 	            return;
 	        }
-	        // Confirmação visual para evitar que o usuário apague sem querer
+
+	        // Busca os dados atuais do motorista para avaliar o histórico de viagens
+	        Motorista m = FachadaMotorista.localizarMotorista(cnh); 
+
+	        //Impede a exclusão se possuir viagens vinculadas
+	        if (m != null && m.getListaViagem() != null && !m.getListaViagem().isEmpty()) {
+	            javax.swing.JOptionPane.showMessageDialog(
+	                frame, 
+	                "Não é possível apagar este motorista porque ele possui " + m.getListaViagem().size() + " viagem(ns) vinculada(s) ao seu histórico.", 
+	                "Exclusão Bloqueada", 
+	                javax.swing.JOptionPane.ERROR_MESSAGE
+	            );
+	            return; // Aborta a exclusão
+	        }
+
+	        // Se passou pela validação, pede a confirmação do usuário
 	        int resposta = javax.swing.JOptionPane.showConfirmDialog(
 	            frame, 
 	            "Tem certeza que deseja apagar o motorista de CNH " + cnh + "?", 
 	            "Confirmar Exclusão", 
 	            javax.swing.JOptionPane.YES_NO_OPTION
 	        );
+
 	        if (resposta == javax.swing.JOptionPane.YES_OPTION) {
-	            // 3. Chama o Controller para realizar a exclusão no banco de dados
+	            // Executa a exclusão
 	            FachadaMotorista.apagarMotorista(cnh);	            
-	            buffer = null; // Reseta o buffer de imagem se houver	                        
+	            
+	            //Limpa os campos da tela
+	            textFieldCnh.setText("");
+	            textField_nome.setText("");
+	            if (labelFoto != null) {
+	                labelFoto.setIcon(null);
+	                labelFoto.setText("sem foto");
+	            }
+	            buffer = null; // Reseta o buffer                        
+	            
+	            //Atualiza o grid geral
 	            listagem(); 
+	            
+	            javax.swing.JOptionPane.showMessageDialog(frame, "Motorista excluído com sucesso!");
 	        }
 
 	    } catch (Exception erro) {
-	        // Se houver viagens vinculadas a esse motorista, a Exception do banco será capturada aqui
-	        //label.setText("Erro ao apagar: " + erro.getMessage());
+	        javax.swing.JOptionPane.showMessageDialog(
+	            frame, 
+	            "Erro ao tentar apagar o motorista: " + erro.getMessage(), 
+	            "Erro", 
+	            javax.swing.JOptionPane.ERROR_MESSAGE
+	        );
+	        erro.printStackTrace();
 	    }
 	}
 }

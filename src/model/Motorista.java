@@ -47,10 +47,9 @@ public class Motorista {
         }
         return iti;
     }
-
     @Override
     public String toString() {
-        String historico  = itinerario();
+        
         return "Motorista: " + nome + "- CNH: "+cnh ;
     }
 }

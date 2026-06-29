@@ -1,7 +1,7 @@
 /**********************************
  * IFPB - Curso Superior de Tec. em Sist. para Internet
- * Persistência de Objetos
- * Prof. Fausto Maranhão Ayres
+ * Persistï¿½ncia de Objetos
+ * Prof. Fausto Maranhï¿½o Ayres
  **********************************/
 package repositorio;
 
@@ -16,7 +16,6 @@ import org.hibernate.engine.spi.SessionFactoryImplementor;
 import util.Util;
 
 public abstract class Repositorio<T> {
-
 	public static void conectar() {
 		Util.conectar();
 	}
@@ -25,7 +24,7 @@ public abstract class Repositorio<T> {
 		Util.desconectar();
 	}
 
-	// operações CRUD genéricas
+	// operaï¿½ï¿½es CRUD genï¿½ricas
 
 	public void criar(T objeto) {
 		Util.getManager().persist(objeto);
@@ -39,7 +38,7 @@ public abstract class Repositorio<T> {
 		Util.getManager().remove(objeto);
 	}
 
-	// MÉTODOS ABSTRATOS (ver subclasses)
+	// Mï¿½TODOS ABSTRATOS (ver subclasses)
 	public abstract T localizar(Object chave);
 
 	public abstract List<T> listar();
@@ -63,7 +62,7 @@ public abstract class Repositorio<T> {
 
 	public void resetID() {
 		// reinicializar id em 1 no banco
-		// deve ser chamado de dentro de uma transação, antes de um commit
+		// deve ser chamado de dentro de uma transaï¿½ï¿½o, antes de um commit
 		@SuppressWarnings("unchecked")
 		Class<T> type = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass())
 				.getActualTypeArguments()[0];

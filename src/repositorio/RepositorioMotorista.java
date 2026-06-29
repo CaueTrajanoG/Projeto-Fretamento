@@ -53,26 +53,18 @@ public class RepositorioMotorista extends Repositorio<Motorista> {
 		
 		return q.getResultList();
 	}
-
 	
 	public void salvarFoto(String cnh, byte[] bytesFoto) throws Exception {
-        // 1. Busca o motorista existente no banco de dados
-        Motorista motorista = localizar(cnh);
-        
-        if (motorista == null) {
-            throw new Exception("Motorista não encontrado para salvar a foto.");
-        }
-        
-        // 2. Inicia a transação se ela não estiver ativa
-        if (!Util.getManager().getTransaction().isActive()) {
-            Util.getManager().getTransaction().begin();
-        }
-        
-        // 3. Atribui os bytes da foto ao objeto gerenciado
-        motorista.setFoto(bytesFoto);
-        
-        // 4. Salva as alterações no banco de dados e encerra a transação
-        Util.getManager().getTransaction().commit();
-    }
+	    // 1. Busca o motorista dentro da mesma conexão/sessão ativa
+	    Motorista motorista = localizar(cnh);	    
+	    if (motorista == null) {
+	        throw new Exception("Motorista não encontrado para salvar a foto.");
+	    }	    
+	    // 2. Atribui os bytes da foto ao objeto
+	    motorista.setFoto(bytesFoto);	    
+	    // 3. Força o Hibernate a mesclar e atualizar o objeto no banco de dados
+	    Util.getManager().merge(motorista); 
+	}	
+	
 	
 }

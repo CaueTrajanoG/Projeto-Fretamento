@@ -37,7 +37,7 @@ public class RepositorioViagem extends Repositorio<Viagem> {
 	}
     public Viagem localizarViagemComMotorista(int idViagem) {
         return Util.getManager()
-            .createQuery("select v from Viagem v join fetch v.motorista where v.id = :id", Viagem.class)
+            .createQuery("select v from Viagem v left join fetch v.motorista where v.id = :id", Viagem.class)
             .setParameter("id", idViagem)
             .getSingleResult();
     }

@@ -1,12 +1,16 @@
 package requisito;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import model.Motorista;
 import repositorio.Repositorio;
 import repositorio.RepositorioMotorista;
 import util.Util;
-import util.Util.*;
 
 public class FachadaMotorista {
     private FachadaMotorista() {}
@@ -106,11 +110,6 @@ public class FachadaMotorista {
             Motorista m = repMotorista.localizar(cnh);
             if (m == null)
                 throw new Exception("Excluir motorista - Motorista inexistente com a CNH: " + cnh);
-
-            // ⚠️ ALERTA DE REGRA DE NEGÓCIO: 
-            // Se o motorista estiver vinculado a alguma Viagem, o Hibernate pode lançar um erro 
-            // de chave estrangeira (Constraint Violation). Idealmente, você deve validar isso antes.
-            
             repMotorista.deletar(m);   
             Repositorio.commit();
             
@@ -148,31 +147,29 @@ public class FachadaMotorista {
         return null; // Se percorreu a lista toda e não achou, retorna null
     }
     
-    public static void salvarFoto(String cnh, byte[] bytesFoto) throws Exception {
-        if (cnh == null || cnh.trim().isEmpty()) {
-            throw new Exception("A CNH do motorista não foi informada.");
-        }
-        if (bytesFoto == null || bytesFoto.length == 0) {
-            throw new Exception("Nenhum dado de imagem válido foi detectado.");
-        }
-        try {
-            if (!Util.getManager().getTransaction().isActive()) {
-                Util.getManager().getTransaction().begin();
-            }
-            RepositorioMotorista repo = new RepositorioMotorista();
-            System.out.println("passei aqui " + cnh);
-            repo.salvarFoto(cnh, bytesFoto);
+    
+	public static void alterarFoto(String cnh, byte[] foto) throws Exception {
+		try {
+			Repositorio.conectar();
+			Repositorio.begin();
+			Motorista m = repMotorista.localizar(cnh); // usando chave primaria
+			if (m == null)
+				throw new Exception("alterar foto - cnh inexistente:" + cnh);
 
-            // 4. Salva permanentemente no banco de dados
-            Util.getManager().getTransaction().commit();
-            
-        } catch (Exception e) {
-            // Se algo der errado (banco fora do ar, erro de conversão, etc), desfaz as alterações
-            if (Util.getManager().getTransaction().isActive()) {
-                Util.getManager().getTransaction().rollback();
-            }
-            throw new Exception("Erro no controlador ao salvar foto: " + e.getMessage());
-        }
-    }
+			m.setFoto(foto);
+			
+			repMotorista.atualizar(m); 		
+			Repositorio.commit();
+
+		} catch (Exception e) {
+			Repositorio.rollback();
+			throw e;
+		} finally {
+			Repositorio.desconectar();
+		}
+	}
+
+	
+	
     
 }

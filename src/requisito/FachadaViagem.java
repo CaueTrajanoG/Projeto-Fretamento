@@ -24,7 +24,6 @@ import repositorio.RepositorioVeiculo;
 public class FachadaViagem {
 	private FachadaViagem() {
 	}
-
 	private static RepositorioViagem repViagem = new RepositorioViagem();
 	private static RepositorioMotorista repMotorista = new RepositorioMotorista();
 	private static RepositorioVeiculo repVeiculo = new RepositorioVeiculo();
