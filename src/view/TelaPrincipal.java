@@ -91,6 +91,15 @@ public class TelaPrincipal {
 				new TelaMotoristas();
 			}
 		});
+		
+		mnVeiculos = new JMenu("Consultas");
+		menuBar.add(mnVeiculos);
+		mnVeiculos.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				new TelaConsultas();
+			}
+		});
 		frame.getContentPane().setLayout(null);
 	}
 }

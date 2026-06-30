@@ -106,9 +106,6 @@ public class FachadaVeiculo {
             if (v == null)
                 throw new Exception("Excluir veículo - Veículo inexistente com a placa: " + placa);
 
-            // ⚠️ ALERTA DE REGRA DE NEGÓCIO: 
-            // Se o veículo estiver associado a uma viagem ativa, o banco impedirá a exclusão.
-            
             repVeiculo.deletar(v);   
             Repositorio.commit();
             

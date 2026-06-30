@@ -22,6 +22,34 @@ public class RepositorioViagem extends Repositorio<Viagem> {
 		TypedQuery<Viagem> query = Util.getManager().createQuery("SELECT v FROM Viagem v", Viagem.class);
 		return query.getResultList();
 	}
+	
+	public List<Viagem> buscarPorPlaca(String placa) {
+		TypedQuery<Viagem> query = Util.getManager().createQuery(
+				"SELECT v FROM Viagem v WHERE v.veiculo.placa = :placa", 
+				Viagem.class
+		);
+		
+		query.setParameter("placa", placa);
+		
+		return query.getResultList();
+	}
+	
+	public List<model.Motorista> listarMotoristasComMaisDeNViagens(int n, String destino) {
+		// Agrupa as viagens por motorista e filtra os que têm contagem maior que N
+		jakarta.persistence.TypedQuery<model.Motorista> query = Util.getManager().createQuery(
+				"SELECT v.motorista FROM Viagem v " +
+				"WHERE v.destino = :destino " +
+				"GROUP BY v.motorista " +
+				"HAVING COUNT(v) > :limite", 
+				model.Motorista.class
+		);
+		
+		query.setParameter("destino", destino);
+		query.setParameter("limite", (long) n); // COUNT em JPQL retorna Long
+		
+		return query.getResultList();
+	}
+	
 
 	public List<Viagem> listarPorDestino(String destino) {
 		TypedQuery<Viagem> query = Util.getManager().createQuery(

@@ -22,9 +22,7 @@ public class Util {
 				logger.error("Arquivo /util/ip.properties inexistente");
 				throw new RuntimeException("arquivo /util/ip.properties inexistente");
 			}
-
-			// O nome aqui deve ser EXATAMENTE igual ao do persistence.xml
-			// Como você definiu <persistence-unit name="pob">, usamos "pob"
+			
 			try {
 				logger.info("----conectando ao banco de dados (pob)");
 				factory = Persistence.createEntityManagerFactory("pob");

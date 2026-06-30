@@ -14,7 +14,6 @@ import util.Util;
 
 public class FachadaMotorista {
     private FachadaMotorista() {}
-
     private static RepositorioMotorista repMotorista = new RepositorioMotorista();
 
     // ==========================================
@@ -50,14 +49,12 @@ public class FachadaMotorista {
             Motorista m = repMotorista.localizar(cnh);
             if (m != null) {
             	System.out.println("CNH duplicada");
-                throw new Exception("Criar motorista - Já existe um motorista cadastrado com esta CNH: " + cnh);
-                
+                throw new Exception("Criar motorista - Já existe um motorista cadastrado com esta CNH: " + cnh);                
             }
             // 3. Instanciação e persistência do objeto
             m = new Motorista();
             m.setCnh(cnh);
-            m.setNome(nome);
-            
+            m.setNome(nome);           
             
             repMotorista.criar(m);
             Repositorio.commit();
@@ -87,7 +84,6 @@ public class FachadaMotorista {
             if (novoNome != null && !novoNome.isBlank()) {
                 m.setNome(novoNome);
             }
-
             repMotorista.atualizar(m); 
             Repositorio.commit();
 
@@ -145,8 +141,7 @@ public class FachadaMotorista {
             }
         }
         return null; // Se percorreu a lista toda e não achou, retorna null
-    }
-    
+    }    
     
 	public static void alterarFoto(String cnh, byte[] foto) throws Exception {
 		try {
@@ -156,8 +151,7 @@ public class FachadaMotorista {
 			if (m == null)
 				throw new Exception("alterar foto - cnh inexistente:" + cnh);
 
-			m.setFoto(foto);
-			
+			m.setFoto(foto);			
 			repMotorista.atualizar(m); 		
 			Repositorio.commit();
 
@@ -168,8 +162,4 @@ public class FachadaMotorista {
 			Repositorio.desconectar();
 		}
 	}
-
-	
-	
-    
 }

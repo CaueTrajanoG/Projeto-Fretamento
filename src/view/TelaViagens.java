@@ -87,12 +87,12 @@ public class TelaViagens {
 			public void windowOpened(WindowEvent arg0) {
 				listagem();
 			}
-		});
+		});	
 
 		label = new JLabel("");
 		label.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		label.setForeground(Color.RED);
-		label.setBounds(26, 371, 436, 29);
+		label.setBounds(26, 371, 605, 29);
 		frame.getContentPane().add(label);
 
 		panelFoto = new JPanel();
@@ -159,10 +159,7 @@ public class TelaViagens {
 						if (viagemSelecionada.getMotorista() != null) {
 							textFieldMotorista.setText(viagemSelecionada.getMotorista().getNome());
 							textFieldCNH.setText(viagemSelecionada.getMotorista().getCnh());
-
-							// --- TRATAMENTO DA FOTO ---
 							byte[] fotoBytes = viagemSelecionada.getMotorista().getFoto();
-							//System.out.println(fotoBytes);
 
 							if (fotoBytes != null && fotoBytes.length > 0) {
 								InputStream in = new ByteArrayInputStream(fotoBytes);
@@ -186,8 +183,6 @@ public class TelaViagens {
 								buffer = null;
 								labelFoto.setText("sem foto");
 							}
-							// ---------------------------------
-
 						} else {
 							// Se a viagem não tiver motorista nenhum vinculado
 							textFieldMotorista.setText("Sem motorista");
@@ -195,7 +190,6 @@ public class TelaViagens {
 							buffer = null;
 							labelFoto.setText("sem foto");
 						}
-
 						// Preenche os dados do veículo
 						if (viagemSelecionada.getVeiculo() != null) {
 							textFieldPlaca.setText(viagemSelecionada.getVeiculo().getPlaca());
@@ -222,8 +216,7 @@ public class TelaViagens {
 		textFieldCNH.setToolTipText("CNH");
 		textFieldCNH.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		textFieldCNH.setColumns(10);
-		textFieldCNH.setEditable(false);
-		textFieldCNH.setBounds(386, 300, 179, 25);
+		textFieldCNH.setBounds(397, 300, 179, 25);
 		frame.getContentPane().add(textFieldCNH);
 
 		JLabel lblNewLabel = new JLabel("Destino: ");
@@ -233,26 +226,24 @@ public class TelaViagens {
 
 		JLabel lblNewLabel_1 = new JLabel("Motorista:");
 		lblNewLabel_1.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		lblNewLabel_1.setBounds(301, 263, 75, 25);
+		lblNewLabel_1.setBounds(312, 263, 75, 25);
 		frame.getContentPane().add(lblNewLabel_1);
 
 		textFieldMotorista = new JTextField();
 		textFieldMotorista.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		textFieldMotorista.setColumns(10);
-		textFieldMotorista.setEditable(false);
-		textFieldMotorista.setBounds(386, 264, 179, 25);
+		textFieldMotorista.setBounds(397, 264, 179, 25);
 		frame.getContentPane().add(textFieldMotorista);
 
 		JLabel lblNewLabel_1_1 = new JLabel("Placa:");
 		lblNewLabel_1_1.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		lblNewLabel_1_1.setBounds(26, 335, 75, 25);
+		lblNewLabel_1_1.setBounds(312, 334, 75, 25);
 		frame.getContentPane().add(lblNewLabel_1_1);
 
 		textFieldPlaca = new JTextField();
 		textFieldPlaca.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		textFieldPlaca.setColumns(10);
-		textFieldPlaca.setEditable(false);
-		textFieldPlaca.setBounds(111, 336, 179, 25);
+		textFieldPlaca.setBounds(397, 335, 179, 25);
 		frame.getContentPane().add(textFieldPlaca);
 
 		// botao para abrir tela de criação de nova viagem
@@ -268,7 +259,7 @@ public class TelaViagens {
 		buttonCriar.setBounds(21, 411, 95, 23);
 		frame.getContentPane().add(buttonCriar);
 
-		buttonAtualizar = new JButton("Atualizar Viagem");
+		buttonAtualizar = new JButton("Atualizar");
 		buttonAtualizar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -286,13 +277,13 @@ public class TelaViagens {
 				}
 			}
 		});
-		buttonAtualizar.setBounds(126, 411, 95, 23); 											
+		buttonAtualizar.setBounds(121, 337, 156, 23); 											
 		frame.getContentPane().add(buttonAtualizar);
 
 		buttonApagar = new JButton("Apagar");
 		buttonApagar.setToolTipText("apagar pessoa e seus dados");
 
-		buttonApagar.setBounds(231, 411, 95, 23);
+		buttonApagar.setBounds(129, 411, 95, 23);
 		frame.getContentPane().add(buttonApagar);
 
 		buttonLimpar = new JButton("Limpar");
@@ -301,9 +292,12 @@ public class TelaViagens {
 				textFieldDestino.setText("");
 				textFieldMotorista.setText("");
 				textFieldPlaca.setText("");
+				labelFoto.setText("Sem Foto");
+				textFieldCNH.setText("");
+				textFieldData.setText("");
 			}
 		});
-		buttonLimpar.setBounds(336, 411, 95, 23);
+		buttonLimpar.setBounds(234, 411, 95, 23);
 		frame.getContentPane().add(buttonLimpar);
 
 		btnCarregarFoto = new JButton("Carregar");
@@ -314,7 +308,6 @@ public class TelaViagens {
 					label.setText("Selecione um motorista na tabela primeiro.");
 					return;
 				}
-
 				File file = selecionarArquivoFoto();
 				if (file == null)
 					return;
@@ -376,11 +369,21 @@ public class TelaViagens {
 
 		JLabel lblCnh = new JLabel("Cnh: ");
 		lblCnh.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		lblCnh.setBounds(300, 299, 60, 25);
+		lblCnh.setBounds(311, 299, 60, 25);
 		frame.getContentPane().add(lblCnh);
-
+		
+		JButton btnRefresh = new JButton("Refresh");		
+		btnRefresh.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+		btnRefresh.setBounds(339, 411, 96, 23);
+		btnRefresh.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// CORRETO: Agora a chamada está dentro de um método executável!
+				listagem();
+			}
+		});
+		frame.getContentPane().add(btnRefresh);
 	}
-
 	// função que busca os dados
 	public void listagem() {
 		try {
@@ -463,5 +466,4 @@ public class TelaViagens {
 		}
 		FachadaMotorista.alterarFoto(viagemSelecionada.getMotorista().getCnh(), bytesfoto);
 	}
-
 }

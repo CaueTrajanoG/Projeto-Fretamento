@@ -24,6 +24,7 @@ import requisito.FachadaVeiculo;
 
 import javax.swing.JTextField;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JButton;
 
 public class TelaVeiculos {
@@ -81,7 +82,7 @@ public class TelaVeiculos {
 
 		table.setShowGrid(true);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		
+
 		// Selecionar linha da tabela
 		table.addMouseListener(new MouseAdapter() {
 			@Override
@@ -93,45 +94,52 @@ public class TelaVeiculos {
 						String placa = (String) table.getValueAt(table.getSelectedRow(), 0);
 						Veiculo v = FachadaVeiculo.buscarVeiculoPorPlaca(placa);
 						textFieldPlaca.setText(v.getPlaca());
-						textFieldCapacidade.setText(String.valueOf(v.getCapacidade()));	
+						textFieldCapacidade.setText(String.valueOf(v.getCapacidade()));
 					}
 				} catch (Exception erro) {
 					erro.printStackTrace();
 				}
 			}
 		});
-		
+
 		textFieldPlaca = new JTextField();
 		textFieldPlaca.setBounds(28, 245, 193, 31);
 		frame.getContentPane().add(textFieldPlaca);
 		textFieldPlaca.setColumns(10);
-		
+
 		textFieldCapacidade = new JTextField();
 		textFieldCapacidade.setColumns(10);
 		textFieldCapacidade.setBounds(28, 306, 193, 31);
 		frame.getContentPane().add(textFieldCapacidade);
-		
+
 		JLabel lblPlaca = new JLabel("Placa");
 		lblPlaca.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		lblPlaca.setBounds(28, 225, 82, 18);
 		frame.getContentPane().add(lblPlaca);
-		
+
 		JLabel lblCapacidade = new JLabel("Capacidade");
 		lblCapacidade.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		lblCapacidade.setBounds(28, 287, 82, 18);
 		frame.getContentPane().add(lblCapacidade);
-		
-		JButton btnAtualizar = new JButton("Atualizar");
+
+		JButton btnAtualizar = new JButton("Atualizar Veículo");
 		btnAtualizar.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-		btnAtualizar.setBounds(27, 359, 104, 31);
+		btnAtualizar.setBounds(27, 359, 150, 31);
 
 		frame.getContentPane().add(btnAtualizar);
-		
+
 		JButton btnNovoVeiculo = new JButton("Novo Veiculo");
 		btnNovoVeiculo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-		btnNovoVeiculo.setBounds(231, 359, 111, 31);
+		btnNovoVeiculo.setBounds(192, 359, 150, 31);
+		btnNovoVeiculo.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// CORRETO: Agora a chamada está dentro de um método executável!
+				cadastrarVeiculo();
+			}
+		});
 		frame.getContentPane().add(btnNovoVeiculo);
-		
+
 		JButton btnRefresh = new JButton("Refresh");
 		btnRefresh.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		btnRefresh.setBounds(246, 244, 96, 31);
@@ -152,19 +160,40 @@ public class TelaVeiculos {
 			DefaultTableModel model = new DefaultTableModel();
 			table.setModel(model);
 
-			// adicionar as colunas (0,1,2) do grid			
+			// adicionar as colunas (0,1,2) do grid
 			model.addColumn("Placa");
 			model.addColumn("Capacidade");
-			
+
 			// adicionar as linhas do grid
 			List<Veiculo> lista = FachadaVeiculo.listarVeiculos();
 			for (Veiculo v : lista) {
 				model.addRow(new Object[] { v.getPlaca(), v.getCapacidade() });
-			};
+			}
+			;
 		} catch (Exception erro) {
 			// label.setText(erro.getMessage());
 		}
 	}
-	
-	
+
+	public void cadastrarVeiculo() {
+		try {
+			// Cadastrar novo veículo
+			String placa = textFieldPlaca.getText();
+
+			// Converte o texto do campo para o tipo int
+			int capacidade = Integer.parseInt(textFieldCapacidade.getText());
+
+			FachadaVeiculo.criarVeiculo(placa, capacidade);
+
+			// Opcional: Mensagem de sucesso para dar um feedback ao usuário
+			JOptionPane.showMessageDialog(frame, this, "Veículo cadastrado com sucesso!", capacidade);
+
+		} catch (NumberFormatException nfe) {
+			// Captura o erro caso o usuário digite letras no campo de capacidade
+			JOptionPane.showMessageDialog(frame, this, "Erro: O campo capacidade deve conter apenas números.", 0);
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(frame, this, "Erro ao salvar: " + ex.getMessage(), 0);
+		}
+	}
+
 }

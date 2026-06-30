@@ -155,6 +155,21 @@ public class FachadaViagem {
 		System.out.println("Listando viagens...");
 		return lista;
 	}
+	public static List<Viagem> listarViagensPorPlaca(String placa) {
+	    Repositorio.conectar();
+	    // Em vez de listar tudo, chama o método do repositório que faz a query filtrada
+	    List<Viagem> lista = repViagem.buscarPorPlaca(placa);
+	    Repositorio.desconectar();
+	    return lista;
+	}
+	
+	public static List<Viagem> listarViagensPorData(LocalDate data) {
+		Repositorio.conectar();
+		// Repassa o LocalDate direto, sem precisar converter nada aqui
+		List<Viagem> lista = repViagem.listarPorData(data);
+		Repositorio.desconectar();
+		return lista;
+	}
 
 	// Listagem por filtro de texto (ex: buscar viagens por destino)
 	public static List<Viagem> listarViagensPorDestino(String destino) {
@@ -163,6 +178,8 @@ public class FachadaViagem {
 		Repositorio.desconectar();
 		return lista;
 	}
+	
+	
 
 	// ==========================================
 	// CONSULTAS CUSTOMIZADAS (Exemplos)
@@ -186,6 +203,17 @@ public class FachadaViagem {
 			throw new Exception("Consulta por data - formato inválido: " + dataStr);
 		}
 	}
+	
+	public static List<model.Motorista> listarMotoristasComMaisDeNViagens(int n, String destino) {
+		Repositorio.conectar();
+		
+		// Executa a consulta filtrada direto no banco da AWS
+		List<model.Motorista> lista = repViagem.listarMotoristasComMaisDeNViagens(n, destino);
+		
+		Repositorio.desconectar();
+		return lista;
+	}
+	
 
 	public static void alterarViagem(int idSelecionada, String destino, String NomeMotorista, String placa, String cnh) throws Exception {
 		try {
