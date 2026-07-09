@@ -10,7 +10,7 @@ A aplicação utiliza o ecossistema JPA/Hibernate para a persistência de dados,
 * **Linguagem:** Java (JDK 17)
 * **Interface Gráfica:** Java Swing
 * **Persistência & ORM:** JPA / Hibernate
-* **Banco de Dados:** PostgreSQL (Hospedado na AWS ou alocado em postgre local)
+* **Banco de Dados:** PostgreSQL (Hospedado na AWS ou alocado em PostgreSQL local)
 * **Gerenciamento de Dependências:** Maven / Configurações locais do ecossistema Eclipse
 
 ---
@@ -23,13 +23,9 @@ Siga os passos abaixo para clonar o repositório, configurar o ambiente e execut
 Antes de começar, certifique-se de ter instalado em sua máquina:
 * [Git](https://git-scm.com/)
 * [JDK 17+](https://www.oracle.com/java/technologies/downloads/)
-* Uma IDE de sua preferência (Eclipse, IntelliJ IDEA ou VsCode)
+* Uma IDE de sua preferência (Eclipse, IntelliJ IDEA ou VS Code)
 
 ### 2. Clonar o Repositório
-Abra o seu terminal (ou Prompt de Comando/PowerShell) e execute o comando abaixo para clonar a branch principal do projeto:
-
-### 3. Para testar a aplicação -> Execute a classe TelaPrincipal.java para acessar integralmente.
-
+Abra o seu terminal (ou Prompt de Comando/PowerShell) e execute o comando abaixo para clonar o projeto diretamente do seu perfil:
 ```bash
-git clone [https://github.com/BELFORTT/Projeto-Fretamento.git](https://github.com/BELFORTT/Projeto-Fretamento.git)
-
+git clone [https://github.com/CaueTrajanoG/Projeto-Fretamento.git](https://github.com/CaueTrajanoG/Projeto-Fretamento.git)
