@@ -60,7 +60,10 @@ public class Viagem {
     public void setVeiculo(Veiculo veiculo) { this.veiculo = veiculo; }
 
     public Motorista getMotorista() { return motorista; }
-    public void setMotorista(Motorista motorista) { this.motorista = motorista; }
+    
+    public void setMotorista(Motorista motorista) { 
+    	this.motorista = motorista; 
+    }
 
     public List<String> getNomePas() { return nomePas; }
     public void setNomePas(List<String> nomePas) { this.nomePas = nomePas; }

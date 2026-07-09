@@ -152,7 +152,6 @@ public class FachadaViagem {
 		Repositorio.conectar();
 		List<Viagem> lista = repViagem.listar();
 		Repositorio.desconectar();
-		System.out.println("Listando viagens...");
 		return lista;
 	}
 	public static List<Viagem> listarViagensPorPlaca(String placa) {
@@ -285,5 +284,31 @@ public class FachadaViagem {
 			Repositorio.desconectar();
 		}
 	
+	}
+	
+	// ==========================================
+	// Desvincular motorista
+	// ==========================================
+	public static void DesvincularMotorista(int id)
+			throws Exception {
+		try {
+			Repositorio.conectar();
+			Repositorio.begin();
+
+			Viagem v = repViagem.localizar(id);
+			if (v == null)
+				throw new Exception("Alterar viagem - Viagem inexistente com o ID: " + id);
+
+			v.setMotorista(null);
+
+			repViagem.atualizar(v);
+			Repositorio.commit();
+
+		} catch (Exception e) {
+			Repositorio.rollback();
+			throw e;
+		} finally {
+			Repositorio.desconectar();
+		}
 	}
 }

@@ -38,6 +38,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 
 public class TelaViagens {
 	protected static final Frame Frame = null;
@@ -89,6 +90,15 @@ public class TelaViagens {
 			}
 		});	
 
+		try {
+			if(FachadaMotorista.localizarMotorista("000000") == null) {
+				FachadaMotorista.criarMotorista("000000", "Sem motorista");				
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		label = new JLabel("");
 		label.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		label.setForeground(Color.RED);
@@ -281,6 +291,30 @@ public class TelaViagens {
 		frame.getContentPane().add(buttonAtualizar);
 
 		buttonApagar = new JButton("Apagar");
+		buttonApagar.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					if(idSelecionada != 0) {
+						FachadaViagem.apagarViagem(idSelecionada);						
+						label.setText("Viagem para "+ textFieldDestino.getText() +" apagada com sucesso.");
+						idSelecionada = 0;
+						textFieldDestino.setText("");
+						textFieldMotorista.setText("");
+						textFieldPlaca.setText("");
+						labelFoto.setIcon(null);
+						labelFoto.setText("Sem Foto");
+						textFieldCNH.setText("");
+						textFieldData.setText("");
+					}else {
+						label.setText("Nenhuma viagem selecionada");
+					}
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}				
+			}
+		});
 		buttonApagar.setToolTipText("apagar pessoa e seus dados");
 
 		buttonApagar.setBounds(129, 411, 95, 23);
@@ -292,6 +326,7 @@ public class TelaViagens {
 				textFieldDestino.setText("");
 				textFieldMotorista.setText("");
 				textFieldPlaca.setText("");
+				labelFoto.setIcon(null);
 				labelFoto.setText("Sem Foto");
 				textFieldCNH.setText("");
 				textFieldData.setText("");
@@ -304,8 +339,8 @@ public class TelaViagens {
 		btnCarregarFoto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String cnh = textFieldCNH.getText();
-				if (cnh == null || cnh.trim().isEmpty()) {
-					label.setText("Selecione um motorista na tabela primeiro.");
+				if (cnh == null || cnh.trim().isEmpty() || cnh == "000000") {
+					label.setText("Motorista não selecionado.");
 					return;
 				}
 				File file = selecionarArquivoFoto();
@@ -343,14 +378,22 @@ public class TelaViagens {
 		btnCarregarFoto.setBounds(639, 374, 108, 23);
 		frame.getContentPane().add(btnCarregarFoto);
 
-		buttonLimparFoto = new JButton("Limpar foto");
+		buttonLimparFoto = new JButton("Desvincular");
 		buttonLimparFoto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				buffer = null;
-				labelFoto.setIcon(null);
-				labelFoto.setText("sem foto");
-				label.setText("");
-				label.setText("Precisa atualizar/criar pessoa para salvar a foto");
+				try {
+					FachadaViagem.DesvincularMotorista(idSelecionada);
+					buffer = null;
+					labelFoto.setIcon(null);
+					labelFoto.setText("Sem foto");
+					textFieldCNH.setText("");
+					textFieldMotorista.setText("Sem motorista");
+					label.setText("Motorista desvinculado com sucesso.");
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				listagem();
 			}
 		});
 		buttonLimparFoto.setBounds(639, 408, 108, 23);
@@ -372,24 +415,24 @@ public class TelaViagens {
 		lblCnh.setBounds(311, 299, 60, 25);
 		frame.getContentPane().add(lblCnh);
 		
-		JButton btnRefresh = new JButton("Refresh");		
-		btnRefresh.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-		btnRefresh.setBounds(339, 411, 96, 23);
-		btnRefresh.addMouseListener(new MouseAdapter() {
+		ActionListener autoRefresh = new ActionListener() {			
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				// CORRETO: Agora a chamada está dentro de um método executável!
+			public void actionPerformed(ActionEvent e) {
 				listagem();
 			}
-		});
-		frame.getContentPane().add(btnRefresh);
+		};
+		
+		Timer timer = new Timer(1000,autoRefresh);
+		timer.setRepeats(true);
+		timer.setDelay(5000);
+		timer.start();
+		
 	}
 	// função que busca os dados
 	public void listagem() {
 		try {
 			DefaultTableModel model = new DefaultTableModel();
 			table.setModel(model);
-
 			// colunas do grid
 			model.addColumn("Id");
 			model.addColumn("Destino");
@@ -401,9 +444,7 @@ public class TelaViagens {
 
 			for (Viagem v : lista) {
 				model.addRow(new Object[] { v.getId(), v.getDestino(), v.getData().format(formatador) });
-			}
-			;
-
+			};
 			javax.swing.table.DefaultTableCellRenderer centralizado = new javax.swing.table.DefaultTableCellRenderer();
 			centralizado.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 

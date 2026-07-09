@@ -50,7 +50,7 @@ public class TelaCadastroViagem extends JDialog {
 
         // --- Campo: Destino ---
         JLabel label_1 = new JLabel("Destino:");
-        label_1.setBounds(15, 67, 40, 16);
+        label_1.setBounds(15, 67, 70, 16);
         painelFormulario.add(label_1);
         txtDestino = new JTextField();
         txtDestino.setBounds(15, 86, 334, 25);
@@ -105,9 +105,9 @@ public class TelaCadastroViagem extends JDialog {
 
     private void carregarMotoristas() {
         try {
-            List<Motorista> motoristas = FachadaMotorista.listarMotoristas(); 
+            List<Motorista> motoristas = FachadaMotorista.listarMotoristas();
             for (Motorista m : motoristas) {
-                comboMotorista.addItem(m);
+                comboMotorista.addItem(m);                
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro ao carregar motoristas: " + e.getMessage());
