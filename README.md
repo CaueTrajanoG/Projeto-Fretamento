@@ -3,6 +3,7 @@
 Sistema desktop desenvolvido em Java Swing para o gerenciamento e registro de viagens, veículos e motoristas. 
 A aplicação utiliza o ecossistema JPA/Hibernate para a persistência de dados, integrada a um banco de dados relacional hospedado na nuvem (AWS).
 
+<img width="1652" height="1124" alt="Pob" src="https://github.com/user-attachments/assets/079162ce-dd22-4381-bd8f-a363d83aa38c" />
 ---
 
 ## 🛠️ Tecnologias Utilizadas
@@ -28,7 +29,6 @@ Antes de começar, certifique-se de ter instalado em sua máquina:
 ### 2. Clonar o Repositório
 Abra o seu terminal (ou Prompt de Comando/PowerShell) e execute o comando abaixo para clonar o projeto diretamente do seu perfil:
 
-<img width="1652" height="1124" alt="Pob" src="https://github.com/user-attachments/assets/079162ce-dd22-4381-bd8f-a363d83aa38c" />
 
 ```bash
 git clone [https://github.com/CaueTrajanoG/Projeto-Fretamento.git](https://github.com/CaueTrajanoG/Projeto-Fretamento.git)
